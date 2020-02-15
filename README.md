@@ -1,5 +1,7 @@
 # iCopyPaste
 
+[Chinese README / 中文版读我](README.zh.md)
+
 A visual SQL map code and DAL access code generation tool, currently adapted to https://github.com/vimac/myspot
 
 Built by Electron + Vue
