@@ -1,0 +1,31 @@
+<?php
+
+namespace MyProject\DataObject\{{=it.database}};
+
+class {{=it.className}} {
+{{~it.columns :item:index}}
+    /**
+     * @var {{=item.type}} {{=item.comment}}
+     */
+    private ${{=item.name}};
+{{~}}{{~it.columns :item:index}}
+    /**
+     * Getter for {{=item.name}}{{? item.comment }}
+     * Comment: {{=item.comment}}{{?}}
+     * @return {{=item.type}}
+     */
+    public function {{=item.getterName}}()
+    {
+        return $this->{{=item.name}};
+    }
+{{~}}{{~it.columns :item:index}}
+    /**
+     * Setter for {{=item.name}}
+     * @param {{=item.type}} ${{=item.name}}
+     */
+    public function {{=item.setterName}}(${{=item.name}})
+    {
+        $this->{{=item.name}} = ${{=item.name}};
+    }
+{{~}}
+}

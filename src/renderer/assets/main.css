@@ -1,0 +1,49 @@
+pre[class*="language-"] {
+    font-size: 12px;
+    padding: .5em;
+}
+
+pre > code {
+    font-size: 11px;
+}
+
+.ivu-tabs-bar {
+    margin-bottom: 3px !important;
+}
+
+.ivu-form .ivu-form-item-label,
+.ivu-radio-wrapper,
+.ivu-form-item-content,
+.ivu-radio-group-button.ivu-radio-group-small .ivu-radio-wrapper,
+.ivu-checkbox-wrapper,
+.ivu-radio-group {
+    font-size: 12px;
+}
+
+code[class*="language-"], pre[class*="language-"] {
+    white-space: pre-wrap;
+}
+
+.ivu-card-head {
+    padding: 7px 10px;
+}
+
+.ivu-card-head p, .ivu-card-head-inner {
+    font-size: 14px
+}
+
+.ivu-table-small td {
+    height: auto;
+}
+
+.ivu-table-small .ivu-table-cell {
+    padding: 2px 3px;
+}
+
+.ivu-form .ivu-form-item-label {
+    padding: 6px 12px;
+}
+
+.ivu-form-item-content {
+    line-height: 24px;
+}

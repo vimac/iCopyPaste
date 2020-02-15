@@ -1,0 +1,11 @@
+INSERT INTO
+ `{{=it.database}}`.`{{=it.table}}`
+{{?it.fields.length}}
+({{~it.fields :value:index}}
+`{{=value}}`{{?index < it.fields.length - 1}}, {{?}}{{~}}
+) VALUES ({{~it.params :value:index}}
+:{{=value}}{{?index < it.params.length - 1}}, {{?}}{{~}}
+)
+{{??}}
+ #INSERT#
+{{?}}

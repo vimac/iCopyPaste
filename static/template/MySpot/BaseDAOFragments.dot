@@ -1,0 +1,52 @@
+<?php
+
+namespace MyProject\DAO;
+
+use Exception;
+use PDO;
+use MySpot\SqlMapConfig;
+use MySpot\SqlMapStatement;
+
+/**
+ * This file is just a example of BaseDAO
+ * You can modify all of these code to fit your web application
+ */
+class BaseDAO {
+
+    /**
+     * @var SqlMapConfig
+     */
+    private $sqlMapConfig;
+
+    /**
+     * @var SqlMap
+     */
+     private $sqlMap;
+
+    public function __construct(string $configurationPath, PDO $pdo)
+    {
+        $this->sqlMapConfig = new SqlMapConfig($configurationPath, $pdo);
+        $this->sqlMapConfig->setDefaultResultMapStyle(SqlMapStatement::MAP_STYLE_LOWER_CAMELCASE_TO_UNDERSCORE);
+        $this->sqlMap = new SqlMap($this->sqlMapConfig);
+    }
+
+    protected function getSqlMap()
+    {
+        return $this->sqlMap;
+    }
+
+    protected function checkQueryArguments(array $requiredParams, ?array $sqlArguments)
+    {
+        foreach(requiredParams as $param) {
+            if (!array_key_exists($param, $sqlArguments)) {
+                throw new Exception(sprintf('Param [%s] is missing in %s', $param, __METHOD__));
+            }
+        }
+        foreach ($sqlArguments as $key => $val) {
+            if (!is_string($val) && !is_bool($val) && !is_float($val) && !is_int($val) && !is_null($val) && (is_array($val) && (count($val) < 1 || count($val) > 2)) {
+                throw new Exception(sprintf('Unacceptable param [%s] in %s', $key, __METHOD__));
+            }
+        }
+    }
+
+}

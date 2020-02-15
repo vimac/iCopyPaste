@@ -1,0 +1,10 @@
+<?php
+// {{=it.exampleFilename}}
+Use MySpot\SqlMapStatement;
+return [
+    '{{=it.queryName}}' => [
+        'sql' => '{{=it.sqlTemplate}}'{{?it.type === 'select'}},
+        'resultType' => {{=it.dataObjectName}}::class,
+        'resultMapStyle' => SqlMapStatement::MAP_STYLE_UNDERSCORE_TO_LOWER_CAMELCASE{{?}}
+    ],
+];

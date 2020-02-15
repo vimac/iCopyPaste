@@ -1,0 +1,13 @@
+DELETE FROM
+ `{{=it.database}}`.`{{=it.table}}`
+{{?it.where.length}}
+ WHERE {{~it.where :value:index}}
+{{?value.optional}}:{{=value.optionalName}}?{{{?}}`{{=value.fieldName}}`{{?value.type === 'PLAIN'}} = :{{=value.name}}{{?}}{{?value.type === 'LIKE'}} LIKE :{{=value.name}}{{?}}{{?value.type === 'IN'}} IN :{{=value.name}}:{{?}}{{?index < it.where.length - 1}},{{?}}{{?value.optional}}}{{?}}
+{{~}}
+{{?}}
+{{?it.order.length}}
+ ORDER BY {{~it.order :value:index}}
+{{?value.optional}}:{{=value.optionalName}}?{{{?}}`{{=value.fieldName}}` {{=value.type}}{{?index < it.order.length - 1}},{{?}}{{?value.optional}}}{{?}}
+{{~}}
+{{?}}
+{{?it.limit}} {{=it.limit}}{{?}}

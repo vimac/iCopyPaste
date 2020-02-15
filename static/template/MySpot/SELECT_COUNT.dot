@@ -1,0 +1,8 @@
+SELECT
+{{?it.fields.length}}{{~it.fields :value:index}} COUNT(`{{=value}}`){{?index < it.fields.length - 1}},{{?}}{{~}}{{??}} COUNT(*){{?}}
+ FROM `{{=it.database}}`.`{{=it.table}}`
+{{?it.where.length}}
+ WHERE {{~it.where :value:index}}
+{{?value.optional}}:{{=value.optionalName}}?{{{?}}`{{=value.fieldName}}`{{?value.type === 'PLAIN'}} = :{{=value.name}}{{?}}{{?value.type === 'LIKE'}} LIKE :{{=value.name}}{{?}}{{?value.type === 'IN'}} IN :{{=value.name}}:{{?}}{{?index < it.where.length - 1}},{{?}}{{?value.optional}}}{{?}}
+{{~}}
+{{?}}

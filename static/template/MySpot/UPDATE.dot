@@ -1,0 +1,19 @@
+UPDATE
+ `{{=it.database}}`.`{{=it.table}}`
+{{?it.fields.length}}
+ SET {{~it.fields :value:index}}
+`{{=value}}` = :{{=it.params[index]}}{{?index < it.fields.length - 1}}, {{?}}{{~}}
+{{??}}
+ #UPDATE#
+{{?}}
+{{?it.where.length}}
+ WHERE {{~it.where :value:index}}
+{{?value.optional}}:{{=value.optionalName}}?{{{?}}`{{=value.fieldName}}`{{?value.type === 'PLAIN'}} = :{{=value.name}}{{?}}{{?value.type === 'LIKE'}} LIKE :{{=value.name}}{{?}}{{?value.type === 'IN'}} IN :{{=value.name}}:{{?}}{{?index < it.where.length - 1}},{{?}}{{?value.optional}}}{{?}}
+{{~}}
+{{?}}
+{{?it.order.length}}
+ ORDER BY {{~it.order :value:index}}
+{{?value.optional}}:{{=value.optionalName}}?{{{?}}`{{=value.fieldName}}` {{=value.type}}{{?index < it.order.length - 1}},{{?}}{{?value.optional}}}{{?}}
+{{~}}
+{{?}}
+{{?it.limit}} {{=it.limit}}{{?}}
