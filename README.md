@@ -8,6 +8,10 @@ Built by Electron + Vue
 
 I will add MyBatis + Java support in the future
 
+#### Download
+
+Visit https://github.com/vimac/iCopyPaste/releases for the latest release
+
 #### Build Setup
 
 ``` bash

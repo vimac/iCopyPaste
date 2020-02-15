@@ -6,6 +6,10 @@
 
 未来准备加入 MyBatis + Java 支持
 
+#### 下载
+
+前往 https://github.com/vimac/iCopyPaste/releases 获取最新版本
+
 #### 本地编译环境
 
 ``` bash
