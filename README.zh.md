@@ -1,5 +1,7 @@
 # iCopyPaste
 
+<img src="https://github.com/vimac/iCopyPaste/raw/master/build/icons/256x256.png" width="128" height="128" alt="Main Icon"/>
+
 一个可视化 SQL 映射代码以及 DAL 数据库访问层的代码生成工具, 目前主要适配 https://github.com/vimac/myspot
 
 主要使用 Electron + Vue 构建

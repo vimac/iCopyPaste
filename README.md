@@ -1,5 +1,7 @@
 # iCopyPaste
 
+<img src="https://github.com/vimac/iCopyPaste/raw/master/build/icons/256x256.png" width="128" height="128" alt="Main Icon"/>
+
 [Chinese README / 中文版读我](README.zh.md)
 
 A visual SQL map code and DAL access code generation tool, currently adapted to https://github.com/vimac/myspot
