@@ -3,7 +3,7 @@
     <CodeHighlight language="php">
       {{dataObjectCode}}
     </CodeHighlight>
-    <Button id="copyCode" @click="onCopyCode" shape="circle" size="small" icon="ios-copy-outline">Copy</Button>
+    <Button id="copyCode" @click="onCopyCode" size="small" icon="ios-copy-outline">Copy</Button>
   </div>
 </template>
 
@@ -27,6 +27,7 @@
       onCopyCode () {
         const {clipboard} = require('electron')
         clipboard.writeText(this.dataObjectCode)
+        this.$Message.info('Copied to clipboard')
       }
     }
   }

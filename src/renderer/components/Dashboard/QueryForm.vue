@@ -51,11 +51,9 @@
     </Form>
     <Tabs>
       <TabPane label="SQL Template">
+        <Button class="copyCode" @click="onCopyCode" size="small" icon="ios-copy-outline">Copy</Button>
         <CodeHighlight language="sql">
-          {{sqlTemplate}}
-        </CodeHighlight>
-        <CodeHighlight language="sql">
-          {{sqlTemplateInline}}
+          {{mixedSql}}
         </CodeHighlight>
       </TabPane>
       <TabPane label="Config">
@@ -98,6 +96,7 @@
       ...mapState({
         sqlTemplate: state => state.code.sqlTemplate,
         sqlTemplateInline: state => state.code.sqlTemplateInline,
+        mixedSql: state => (`# Expanded SQL Template \n\n${state.code.sqlTemplate}\n\n\n# Single Line SQL Template\n\n${state.code.sqlTemplateInline}`),
         configTemplate: state => state.code.configTemplate,
         queryName: state => state.code.queryName,
         daoCode: state => state.code.daoCode,
@@ -381,6 +380,13 @@
   .ivu-table-cell {
     padding-left: 4px;
     padding-right: 4px;
+  }
+
+  .copyCode {
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    z-index: 10000;
   }
 
 </style>
