@@ -1,12 +1,12 @@
 # iCopyPaste
 
-<img src="https://github.com/vimac/iCopyPaste/raw/master/build/icons/256x256.png" width="128" height="128" alt="Main Icon"/>
+<img src="https://github.com/vimac/iCopyPaste/raw/master/build/icons/256x256.png" width="128" height="128" alt="应用图标"/>
 
-一个可视化 SQL 映射代码以及 DAL 数据库访问层的代码生成工具, 目前主要适配 https://github.com/vimac/myspot
-
-主要使用 Electron + Vue 构建
+一个可视化 SQL 映射代码以及 DAL 数据库访问层的代码生成工具, 目前主要适配 [MySpot](https://github.com/vimac/myspot), 一个的支持 SQL Map 的 PHP 数据库访问层的框架
 
 未来准备加入 MyBatis + Java 支持
+
+使用 Electron + Vue 构建
 
 #### 下载
 
@@ -28,6 +28,14 @@ yarn run build
 yarn run lint
 
 ```
+
+#### License
+
+[MIT License](LICENSE)
+
+#### 关于我
+
+一个爱好摄影的开发者, 可以访问我的主页 [vifix.cn](https://vifix.cn) 了解更多
 
 ---
 

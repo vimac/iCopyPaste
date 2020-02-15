@@ -4,11 +4,11 @@
 
 [Chinese README / 中文版读我](README.zh.md)
 
-A visual SQL map code and DAL access code generation tool, currently adapted to https://github.com/vimac/myspot
-
-Built by Electron + Vue
+A visual SQL map code and DAL access code generation tool, currently adapted to [MySpot](https://github.com/vimac/myspot), which is a DAL framework with SQL map support.
 
 I will add MyBatis + Java support in the future
+
+Built by Electron + Vue
 
 #### Download
 
@@ -30,6 +30,14 @@ yarn run build
 yarn run lint
 
 ```
+
+#### License
+
+[MIT License](LICENSE)
+
+#### About Me
+
+A developer who likes photography, visit [vifix.cn](https://vifix.cn) to know more
 
 ---
 
