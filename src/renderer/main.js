@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 
 import ViewUI from 'view-design'
+import enUS from 'view-design/dist/locale/en-US'
 import SequelizeBridge from './util/SequelizeBridge'
 import DotBridge from './util/DotBridge'
 import 'view-design/dist/styles/iview.css'
@@ -18,7 +19,7 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
-Vue.use(ViewUI)
+Vue.use(ViewUI, {locale: enUS})
 Vue.use(SequelizeBridge)
 Vue.use(VueCodeHighlight)
 Vue.use(DotBridge)
