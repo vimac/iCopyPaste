@@ -2,11 +2,11 @@
 
 <img src="https://github.com/vimac/iCopyPaste/raw/master/build/icons/256x256.png" width="128" height="128" alt="应用图标"/>
 
-一个可视化 SQL 映射代码以及 DAL 数据库访问层的代码生成工具, 目前主要适配 [MySpot](https://github.com/vimac/myspot), 一个的支持 SQL Map 的 PHP 数据库访问层的框架
+一个可视化 SQL 映射代码以及 DAL 数据库访问层的代码生成工具, 目前主要适配 [MySpot](https://github.com/vimac/myspot), 一个支持 SQL Map 的 PHP 数据库访问层的框架
 
 未来准备加入 MyBatis + Java 支持
 
-使用 Electron + Vue + iView + Sequelize 构建, 在 Electron 的支持下，它可以在 **Windows**, **macOS**, **Linux** 上运行
+使用 Electron + Vue + iView + Sequelize 构建, 在 Electron 的支持下, 它可以在 **Windows**, **macOS**, **Linux** 上运行
 
 <img src="https://github.com/vimac/iCopyPaste/raw/master/snapshot.png" alt="Snapshot"/>
 
