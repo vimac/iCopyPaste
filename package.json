@@ -22,6 +22,7 @@
   "build": {
     "productName": "iCopyPaste",
     "appId": "cn.vifix.i-copy-paste",
+    "artifactName": "${productName}_${os}_${arch}_${version}.${ext}",
     "directories": {
       "output": "build"
     },
@@ -45,7 +46,6 @@
     },
     "mac": {
       "icon": "build/icons/icon.icns",
-      "artifactName": "${productName}-macOS-${version}.${arch}${ext}",
       "target": [
         {
           "target": "dmg"
@@ -54,20 +54,15 @@
     },
     "win": {
       "icon": "build/icons/icon.ico",
-      "artifactName": "${productName}-Windows-${version}.${arch}${ext}",
       "target": [
         {
           "target": "portable",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
+          "arch": "x64"
         }
       ]
     },
     "linux": {
       "icon": "build/icons",
-      "artifactName": "${productName}-Linux-${version}.${arch}.${ext}",
       "category": "Development",
       "target": [
         {
