@@ -6,6 +6,7 @@ const state = {
   configTemplateName: '',
   queryName: '',
   daoCode: '',
+  daoMethodCode: '',
   baseDAOCode: ''
 }
 
@@ -22,6 +23,7 @@ const mutations = {
   },
   GENERATE_DAO_CODE (state, payload) {
     state.daoCode = payload.code
+    state.daoMethodCode = payload.daoMethodCode
     state.baseDAOCode = payload.baseDAOCode
   }
 }

@@ -3,7 +3,7 @@
     <CodeHighlight language="php">
       {{dataObjectCode}}
     </CodeHighlight>
-    <Button id="copyCode" @click="onCopyCode" size="small" icon="ios-copy-outline">Copy</Button>
+    <Button id="copyCode" @click="onCopyCode" size="small" icon="ios-copy-outline"></Button>
   </div>
 </template>
 

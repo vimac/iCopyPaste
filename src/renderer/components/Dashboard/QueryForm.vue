@@ -49,29 +49,44 @@
         </RadioGroup>
       </FormItem>
     </Form>
-    <Tabs>
-      <TabPane label="SQL Template">
-        <Button class="copyCode" @click="onCopyCode" size="small" icon="ios-copy-outline">Copy</Button>
-        <CodeHighlight language="sql">
-          {{mixedSql}}
-        </CodeHighlight>
-      </TabPane>
-      <TabPane label="Config">
-        <CodeHighlight language="php">
-          {{configTemplate}}
-        </CodeHighlight>
-      </TabPane>
-      <TabPane label="DAO">
-        <CodeHighlight language="php">
-          {{daoCode}}
-        </CodeHighlight>
-      </TabPane>
-      <TabPane label="BaseDAO">
-        <CodeHighlight language="php">
-          {{baseDAOCode}}
-        </CodeHighlight>
-      </TabPane>
-    </Tabs>
+    <div>
+      <Tabs ref="tab">
+        <TabPane label="SQL Template" class="codeTab">
+          <ButtonGroup class="copyCode">
+            <Button @click="onCopyExpanded" size="small" icon="ios-copy-outline">Expanded</Button>
+            <Button @click="onCopySingleLine" size="small" icon="ios-copy-outline">Single line</Button>
+          </ButtonGroup>
+          <CodeHighlight language="sql">
+            {{mixedSql}}
+          </CodeHighlight>
+        </TabPane>
+        <TabPane label="Config" class="codeTab">
+          <ButtonGroup class="copyCode">
+            <Button @click="onCopyConfig" size="small" icon="ios-copy-outline">Config</Button>
+          </ButtonGroup>
+          <CodeHighlight language="php">
+            {{configTemplate}}
+          </CodeHighlight>
+        </TabPane>
+        <TabPane label="DAO" class="codeTab">
+          <ButtonGroup class="copyCode">
+            <Button @click="onCopyDAO" size="small" icon="ios-copy-outline">Class</Button>
+            <Button @click="onCopyDAOMethod" size="small" icon="ios-copy-outline">Method</Button>
+          </ButtonGroup>
+          <CodeHighlight language="php">
+            {{daoCode}}
+          </CodeHighlight>
+        </TabPane>
+        <TabPane label="BaseDAO" class="codeTab">
+          <ButtonGroup class="copyCode">
+            <Button @click="onCopyBaseDAO" size="small" icon="ios-copy-outline">BaseDAO</Button>
+          </ButtonGroup>
+          <CodeHighlight language="php">
+            {{baseDAOCode}}
+          </CodeHighlight>
+        </TabPane>
+      </Tabs>
+    </div>
   </div>
 </template>
 
@@ -100,6 +115,7 @@
         configTemplate: state => state.code.configTemplate,
         queryName: state => state.code.queryName,
         daoCode: state => state.code.daoCode,
+        daoMethodCode: state => state.code.daoMethodCode,
         baseDAOCode: state => state.code.baseDAOCode
       }),
       whereFields: {
@@ -148,6 +164,30 @@
     methods: {
       generateSQL () {
         this.$dot.generateMySpotSQL(this.type, this.database, this.table, this.columns, this.field, this.where, this.order, this.limit, this.argsType)
+      },
+      onCopyExpanded () {
+        require('electron').clipboard.writeText(this.sqlTemplate)
+        this.$Message.info('Expanded SQL template copied to clipboard')
+      },
+      onCopySingleLine () {
+        require('electron').clipboard.writeText(this.sqlTemplateInline)
+        this.$Message.info('Single line SQL template copied to clipboard')
+      },
+      onCopyConfig () {
+        require('electron').clipboard.writeText(this.configTemplate)
+        this.$Message.info('Configuration template copied to clipboard')
+      },
+      onCopyDAO () {
+        require('electron').clipboard.writeText(this.daoCode)
+        this.$Message.info('DAO class code copied to clipboard')
+      },
+      onCopyDAOMethod () {
+        require('electron').clipboard.writeText(this.daoMethodCode)
+        this.$Message.info('DAO method copied to clipboard')
+      },
+      onCopyBaseDAO () {
+        require('electron').clipboard.writeText(this.baseDAOCode)
+        this.$Message.info('BaseDAO code copied to clipboard')
       }
     },
     mounted () {
@@ -382,10 +422,14 @@
     padding-right: 4px;
   }
 
+  .codeTab {
+    position: relative;
+  }
+
   .copyCode {
     position: absolute;
     right: 10px;
-    top: 15px;
+    top: 14px;
     z-index: 10000;
   }
 

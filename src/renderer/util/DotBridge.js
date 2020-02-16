@@ -506,7 +506,8 @@ export default {
       generateDaoCode (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
         const code = daoGenerations[type](...arguments)
         const baseDAOCode = generateBaseDAOTemplate()
-        store.dispatch('generateDaoCode', {code, baseDAOCode})
+        const daoMethodCode = code.match(/(public function[\s\S]+})\s+}$/m)[1]
+        store.dispatch('generateDaoCode', {code, baseDAOCode, daoMethodCode})
       }
     }
     Vue.prototype.$dot = dotBridge
