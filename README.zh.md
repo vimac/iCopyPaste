@@ -8,6 +8,8 @@
 
 使用 Electron + Vue + iView + Sequelize 构建
 
+<img src="https://github.com/vimac/iCopyPaste/raw/master/snapshot.png" alt="Snapshot"/>
+
 #### 下载
 
 前往 https://github.com/vimac/iCopyPaste/releases 获取最新版本

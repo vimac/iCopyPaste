@@ -10,6 +10,8 @@ I will add MyBatis + Java support in the future
 
 Built by Electron + Vue + iView + Sequelize
 
+<img src="https://github.com/vimac/iCopyPaste/raw/master/snapshot.png" alt="Snapshot"/>
+
 #### Download
 
 Visit https://github.com/vimac/iCopyPaste/releases for the latest release
