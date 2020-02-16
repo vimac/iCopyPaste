@@ -1,13 +1,13 @@
 {
   "name": "i-copy-paste",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "vimac <vifix.mac@gmail.com>",
   "description": "A GUI tools to generate SQL map code & DAL code",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
-    "build:win": "node .electron-vue/build.js && electron-builder --platform=win32 --arch all",
+    "build:all": "node .electron-vue/build.js && electron-builder -mwl",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -44,13 +44,36 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/icon.icns",
+      "artifactName": "${productName}-macOS-${version}.${arch}${ext}",
+      "target": [
+        {
+          "target": "dmg"
+        }
+      ]
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/icon.ico",
+      "artifactName": "${productName}-Windows-${version}.${arch}${ext}",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
     },
     "linux": {
-      "icon": "build/icons"
+      "icon": "build/icons",
+      "artifactName": "${productName}-Linux-${version}.${arch}.${ext}",
+      "category": "Development",
+      "target": [
+        {
+          "target": "AppImage"
+        }
+      ]
     }
   },
   "dependencies": {
