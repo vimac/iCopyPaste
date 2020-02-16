@@ -6,7 +6,7 @@
 
 未来准备加入 MyBatis + Java 支持
 
-使用 Electron + Vue 构建
+使用 Electron + Vue + iView + Sequelize 构建
 
 #### 下载
 

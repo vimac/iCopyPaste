@@ -8,7 +8,7 @@ A visual SQL map code and DAL access code generation tool, currently adapted to 
 
 I will add MyBatis + Java support in the future
 
-Built by Electron + Vue
+Built by Electron + Vue + iView + Sequelize
 
 #### Download
 
