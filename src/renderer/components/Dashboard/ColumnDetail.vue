@@ -6,7 +6,7 @@
           <ListItemMeta>
             <Icon type="ios-cube-outline" slot="avatar" class="columnListAvatar"/>
             <div slot="title" class="columnListMeta">
-              <span class="columnListMetaComment">{{comment || '-'}}</span>
+              <span class="columnListMetaComment">{{comment}}</span>
               {{name}}
               <span class="columnListMetaInfo">{{type}}</span>
               <span v-if="key !== ''" class="columnListMetaInfo">{{key}}</span>

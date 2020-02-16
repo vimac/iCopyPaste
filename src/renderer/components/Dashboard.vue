@@ -23,7 +23,7 @@
                 v-if="tableFilter === '' || name.indexOf(tableFilter) > -1"
                 :name="name"
                 :title="name"
-                :label="comment || '-'"
+                :label="comment || ''"
                 :selected="selectedTable === name"
                 :key="name"
                 :to="{path: '/dashboard/' + name}"/>
