@@ -8,7 +8,7 @@ A visual SQL map code and DAL access code generation tool, currently adapted to 
 
 I will add MyBatis + Java support in the future
 
-Built by Electron + Vue + iView + Sequelize
+Built by Electron + Vue + iView + Sequelize. With Electron's power, it supports **Windows**, **macOS** and **Linux** desktop.
 
 <img src="https://github.com/vimac/iCopyPaste/raw/master/snapshot.png" alt="Snapshot"/>
 

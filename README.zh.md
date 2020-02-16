@@ -6,7 +6,7 @@
 
 未来准备加入 MyBatis + Java 支持
 
-使用 Electron + Vue + iView + Sequelize 构建
+使用 Electron + Vue + iView + Sequelize 构建, 在 Electron 的支持下，它可以在 **Windows**, **macOS**, **Linux** 上运行
 
 <img src="https://github.com/vimac/iCopyPaste/raw/master/snapshot.png" alt="Snapshot"/>
 
