@@ -42,8 +42,24 @@ const getOptionalName = (prefix, variableName) => {
   return prefix + ucfirst(underscoreToCamelCase(variableName))
 }
 
+const getBaseNamespace = () => {
+  return 'MyProject\\'
+}
+
 const getDataObjectFullName = (database, table) => {
-  return 'MyProject\\DataObject\\' + ucfirst(underscoreToCamelCase(database)) + '\\' + ucfirst(underscoreToCamelCase(table)) + 'DO'
+  return '\\' + getBaseNamespace() + '\\DataObject\\' + ucfirst(underscoreToCamelCase(database)) + '\\' + ucfirst(underscoreToCamelCase(table)) + 'DO'
+}
+
+const getBaseDAOName = () => {
+  return getBaseNamespace() + 'DAO\\BaseDAO'
+}
+
+const getBaseDAONamespace = (database) => {
+  return getBaseNamespace() + 'DAO'
+}
+
+const getDAONamespace = (database) => {
+  return getBaseNamespace() + 'DAO\\' + ucfirst(underscoreToCamelCase(database))
 }
 
 const getDataObjectShortName = (database, table) => {
@@ -125,7 +141,7 @@ const getArgsFromWhereArray = (where, columns) => {
     r.push({
       name: underscoreToCamelCase(item.name),
       keyName: underscoreToCamelCase(item.name),
-      phpType: convertSQLTypeToNative(columnType),
+      phpType: item.type === 'IN' ? 'array' : convertSQLTypeToNative(columnType),
       pdoType: convertSQLTypeToPDOType(columnType),
       condition: false
     })
@@ -327,7 +343,9 @@ export default {
         required,
         methodName,
         returnType: {type: getDataObjectFullName(database, table), comment: 'Data Object'},
-        fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName)
+        fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
+        daoNamespace: getDAONamespace(database),
+        baseDAOName: getBaseDAOName()
       }
       return render(vars)
     }
@@ -356,7 +374,9 @@ export default {
           required,
           methodName,
           returnType: {type: 'int', comment: 'Counted lines'},
-          fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName)
+          fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
+          daoNamespace: getDAONamespace(database),
+          baseDAOName: getBaseDAOName()
         }
         return dotRender(vars)
       },
@@ -388,7 +408,9 @@ export default {
           required,
           methodName,
           returnType: {type: 'int', comment: 'Last insert ID'},
-          fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName)
+          fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
+          daoNamespace: getDAONamespace(database),
+          baseDAOName: getBaseDAOName()
         }
         return dotRender(vars)
       },
@@ -433,7 +455,9 @@ export default {
           methodName,
           returnType: {type: 'int', comment: 'Affected lines'},
           fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
-          updateArguments
+          updateArguments,
+          daoNamespace: getDAONamespace(database),
+          baseDAOName: getBaseDAOName()
         }
 
         return dotRender(vars)
@@ -446,7 +470,7 @@ export default {
     const generateBaseDAOTemplate = () => {
       let template = fs.readFileSync(path.join(__static, '/template/MySpot/BaseDAOFragments.dot'), 'utf8')
       const render = doT.template(template)
-      return render({})
+      return render({baseDAONamespace: getBaseDAONamespace()})
     }
 
     dotBridge = {
@@ -506,7 +530,7 @@ export default {
       generateDaoCode (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
         const code = daoGenerations[type](...arguments)
         const baseDAOCode = generateBaseDAOTemplate()
-        const daoMethodCode = code.match(/(public function[\s\S]+})\s+}$/m)[1]
+        const daoMethodCode = code.match(/\{\s+( {4}\/[\s\S]+public function[\s\S]+\})\s+\}$/m)[1]
         store.dispatch('generateDaoCode', {code, baseDAOCode, daoMethodCode})
       }
     }
