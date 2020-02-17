@@ -35,10 +35,10 @@
       </FormItem>
       <FormItem label="Limit">
         <RadioGroup size="small" v-model="limit">
-          <Radio label="NO" :disabled="disableLimit">NO LIMIT</Radio>
-          <Radio label="LIMIT_ONE" :disabled="disableLimit">LIMIT 1</Radio>
-          <Radio label="LIMIT_ROWS" :disabled="disableLimit">LIMIT ?</Radio>
-          <Radio label="LIMIT_OFFSET_ROWS" :disabled="disableLimit">LIMIT ?, ?</Radio>
+          <Radio label="no" :disabled="disableLimit">NO LIMIT</Radio>
+          <Radio label="limitOne" :disabled="disableLimit">LIMIT 1</Radio>
+          <Radio label="limitRows" :disabled="disableLimit">LIMIT ?</Radio>
+          <Radio label="limitOffsetRows" :disabled="disableLimit">LIMIT ?, ?</Radio>
         </RadioGroup>
       </FormItem>
       <FormItem label="Arguments">
@@ -46,6 +46,17 @@
           <Radio label="plain">Plain</Radio>
           <Radio label="array">Array</Radio>
           <Radio label="do" :disabled="disableDataObjectType">DataObject</Radio>
+        </RadioGroup>
+      </FormItem>
+      <FormItem label="ReturnType">
+        <RadioGroup size="small" v-model="returnType">
+          <Radio label="sqlMapResult" :disabled="disableReturnType.indexOf('sqlMapResult') > -1">SQLMapResult</Radio>
+          <Radio label="do" :disabled="disableReturnType.indexOf('do') > -1">DataObject</Radio>
+          <Radio label="stdClass" :disabled="disableReturnType.indexOf('stdClass') > -1">StdClass</Radio>
+          <Radio label="onlyValue" :disabled="disableReturnType.indexOf('onlyValue') > -1">Only value</Radio>
+          <Radio label="array" :disabled="disableReturnType.indexOf('array') > -1">Array</Radio>
+          <Radio label="lines" :disabled="disableReturnType.indexOf('lines') > -1">Affect lines</Radio>
+          <Radio label="lastInsertId" :disabled="disableReturnType.indexOf('lastInsertId') > -1">Last ID</Radio>
         </RadioGroup>
       </FormItem>
     </Form>
@@ -112,7 +123,7 @@
       ...mapState({
         sqlTemplate: state => state.code.sqlTemplate,
         sqlTemplateInline: state => state.code.sqlTemplateInline,
-        mixedSql: state => (`# Expanded SQL Template \n\n${state.code.sqlTemplate}\n\n\n# Single Line SQL Template\n\n${state.code.sqlTemplateInline}`),
+        mixedSql: state => state.code.mixedSql,
         configTemplate: state => state.code.configTemplate,
         configTemplateItem: state => state.code.configTemplateItem,
         queryName: state => state.code.queryName,
@@ -165,7 +176,7 @@
     },
     methods: {
       generateSQL () {
-        this.$dot.generateMySpotSQL(this.type, this.database, this.table, this.columns, this.field, this.where, this.order, this.limit, this.argsType)
+        this.$dot.generateMySpotSQL(this.type, this.database, this.table, this.columns, this.field, this.where, this.order, this.limit, this.argsType, this.returnType)
       },
       onCopyExpanded () {
         require('electron').clipboard.writeText(this.sqlTemplate)
@@ -206,6 +217,7 @@
         this.disableWhere = false
         this.disableLimit = false
         this.disableDataObjectType = true
+        this.disableReturnType = []
         this.argsType = this.argsType === 'do' ? 'plain' : this.argsType
         if (newType === 'insert') {
           this.disableWhere = true
@@ -214,16 +226,28 @@
           this.disableDataObjectType = false
           this.where = []
           this.order = []
-          this.limit = 'NO'
+          this.limit = 'no'
+          this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'lastInsertId'
+          this.disableReturnType = ['do', 'array', 'stdClass', 'onlyValue']
         } else if (newType === 'delete') {
           this.disableField = true
           this.field = []
-          this.limit = 'LIMIT_ONE'
+          this.limit = 'limitOne'
+          this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'lines'
+          this.disableReturnType = ['do', 'array', 'stdClass', 'lastInsertId', 'onlyValue']
+        } else if (newType === 'update') {
+          this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'lines'
+          this.disableReturnType = ['do', 'array', 'stdClass', 'lastInsertId', 'onlyValue']
         } else if (newType === 'selectCount') {
           this.disableOrder = true
           this.disableLimit = true
           this.order = []
-          this.limit = 'NO'
+          this.limit = 'no'
+          this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'onlyValue'
+          this.disableReturnType = ['do', 'stdClass', 'lines', 'lastInsertId']
+        } else if (newType === 'select') {
+          this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'do'
+          this.disableReturnType = ['lines', 'lastInsertId']
         }
         this.generateSQL()
       },
@@ -232,7 +256,7 @@
         this.field = []
         this.where = []
         this.order = []
-        this.limit = 'NO'
+        this.limit = 'no'
       },
       ...(() => {
         let x = {
@@ -241,13 +265,14 @@
           },
           deep: true
         }
-        return {where: x, order: x, field: x, limit: x, argsType: x}
+        return {where: x, order: x, field: x, limit: x, argsType: x, returnType: x}
       })()
     },
     data () {
       return {
         type: 'select',
         argsType: 'plain',
+        returnType: 'do',
         field: [],
         selectedField: [],
         where: [],
@@ -407,12 +432,13 @@
             }
           }
         ],
-        limit: 'NO',
+        limit: 'no',
         disableField: false,
         disableWhere: false,
         disableOrder: false,
         disableLimit: false,
-        disableDataObjectType: true
+        disableDataObjectType: true,
+        disableReturnType: ['lines', 'lastInsertId']
       }
     }
   }

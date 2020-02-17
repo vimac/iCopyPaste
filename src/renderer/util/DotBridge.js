@@ -8,22 +8,22 @@ import store from '../store'
 const underscoreToCamelCase = str => str.replace(/_([a-z])/g, x => x[1].toUpperCase())
 const ucfirst = str => str.replace(/^./, x => x[0].toUpperCase())
 
-const convertSQLTypeToNative = (type) => {
-  if (/(?:BOOL)/i.test(type)) {
+const convertSQLTypeToNative = (sqlType) => {
+  if (/(?:BOOL)/i.test(sqlType)) {
     return 'bool'
-  } else if (/(?:INT)/i.test(type)) {
+  } else if (/(?:INT)/i.test(sqlType)) {
     return 'int'
-  } else if (/(?:DOUBLE)|(?:FLOAT)/i.test(type)) {
+  } else if (/(?:DOUBLE)|(?:FLOAT)/i.test(sqlType)) {
     return 'float'
   } else {
     return 'string'
   }
 }
 
-const convertSQLTypeToPDOType = (type) => {
-  if (/(?:BOOL)/i.test(type)) {
+const convertSQLTypeToPDOType = (sqlType) => {
+  if (/(?:BOOL)/i.test(sqlType)) {
     return 'SqlMapConst::PARAM_BOOL'
-  } else if (/(?:INT)/i.test(type)) {
+  } else if (/(?:INT)/i.test(sqlType)) {
     return 'SqlMapConst::PARAM_INT'
   } else {
     return 'SqlMapConst::PARAM_STR'
@@ -170,7 +170,7 @@ const getArgsFromOrderArray = (order) => {
 
 const getArgsFromLimitType = (limitType) => {
   let args = []
-  if (limitType === 'LIMIT_ROWS') {
+  if (limitType === 'limitRows') {
     args.push({
       name: 'limitRows',
       keyName: 'limitRows',
@@ -178,7 +178,7 @@ const getArgsFromLimitType = (limitType) => {
       pdoType: convertSQLTypeToNative('INT'),
       condition: false
     })
-  } else if (limitType === 'LIMIT_OFFSET_ROWS') {
+  } else if (limitType === 'limitOffsetRows') {
     args.push({
       name: 'limitOffset',
       keyName: 'limitOffset',
@@ -204,9 +204,9 @@ const getRequiredParamsFromWhereAndLimit = (where, limitType) => {
     }
   }).filter(item => item)
 
-  if (limitType === 'LIMIT_ROWS') {
+  if (limitType === 'limitRows') {
     required.push('limitRows')
-  } else if (limitType === 'LIMIT_OFFSET_ROWS') {
+  } else if (limitType === 'limitOffsetRows') {
     required.push('limitOffset')
     required.push('limitRows')
   }
@@ -237,13 +237,13 @@ const getFuncArgs = (limitType, incomingArgs = [], database = null, table = null
 
 const processLimit = (limitType) => {
   switch (limitType) {
-    case 'NO':
+    case 'no':
       return ''
-    case 'LIMIT_ONE':
+    case 'limitOne':
       return 'LIMIT 1'
-    case 'LIMIT_ROWS':
+    case 'limitRows':
       return 'LIMIT :limitRows'
-    case 'LIMIT_OFFSET_ROWS':
+    case 'limitOffsetRows':
       return 'LIMIT :limitOffset, :limitRows'
   }
 }
@@ -264,6 +264,63 @@ const getArgsFromColumns = (columns, prefix = '') => {
   }).filter(item => item)
 }
 
+const getReturnTemplate = (queryType, returnType, limitType, fullDataObjectName = '') => {
+  let isArray = false
+  let commentReturnType = null
+  let comment = ''
+  let realType
+  switch (returnType) {
+    case 'sqlMapResult':
+      commentReturnType = '\\MySpot\\SqlMapResult'
+      comment = 'Executed result'
+      realType = commentReturnType
+      break
+    case 'do':
+      realType = 'array'
+      if (limitType !== 'limitOne') {
+        isArray = true
+        realType = fullDataObjectName
+      }
+      commentReturnType = fullDataObjectName
+      comment = 'DataObject' + (isArray ? ' array' : '')
+      break
+    case 'stdClass':
+      realType = 'array'
+      if (limitType !== 'limitOne') {
+        isArray = true
+        commentReturnType = '\\stdClass'
+      }
+      commentReturnType = '\\stdClass'
+      comment = 'Anonymous object' + (isArray ? ' array' : '')
+      break
+    case 'array':
+      if (limitType !== 'limitOne') {
+        isArray = true
+      }
+      commentReturnType = 'array'
+      realType = commentReturnType
+      comment = 'Result set in array'
+      break
+    case 'lines':
+      commentReturnType = 'int'
+      realType = commentReturnType
+      comment = 'Affected lines'
+      break
+    case 'lastInsertId':
+      commentReturnType = 'int'
+      realType = commentReturnType
+      comment = 'Last insert ID'
+      break
+    case 'onlyValue':
+      commentReturnType = 'mixed'
+      if (queryType === 'selectCount') {
+        comment = 'Counted lines'
+      }
+      break
+  }
+  return {isArray, commentReturnType, comment, realType, returnType}
+}
+
 export default {
   install (Vue, options) {
     // do nothing
@@ -272,7 +329,7 @@ export default {
     let dotBridge = {}
 
     const queryGenerations = {
-      select (type, database, table, columns, fields, where, order, limitType) {
+      select (queryType, database, table, columns, fields, where, order, limitType, returnType) {
         let template = fs.readFileSync(path.join(__static, '/template/MySpot/SELECT.dot'), 'utf8')
         const render = doT.template(template)
         where = generateWhereTemplateVars(where)
@@ -282,21 +339,21 @@ export default {
         }
         return render(vars)
       },
-      selectCount (type, database, table, columns, fields, where, order, limitType) {
+      selectCount (queryType, database, table, columns, fields, where, order, limitType, returnType) {
         let template = fs.readFileSync(path.join(__static, '/template/MySpot/SELECT_COUNT.dot'), 'utf8')
         const render = doT.template(template)
         where = generateWhereTemplateVars(where)
         const vars = {database, table, fields, where}
         return render(vars)
       },
-      insert (type, database, table, columns, fields, where, order, limitType) {
+      insert (queryType, database, table, columns, fields, where, order, limitType, returnType) {
         let template = fs.readFileSync(path.join(__static, '/template/MySpot/INSERT.dot'), 'utf8')
         const render = doT.template(template)
         const params = fields.map(item => underscoreToCamelCase(item))
         const vars = {database, table, fields, params}
         return render(vars)
       },
-      update (type, database, table, columns, fields, where, order, limitType) {
+      update (queryType, database, table, columns, fields, where, order, limitType, returnType) {
         let template = fs.readFileSync(path.join(__static, '/template/MySpot/UPDATE.dot'), 'utf8')
         const render = doT.template(template)
         where = generateWhereTemplateVars(where)
@@ -307,7 +364,7 @@ export default {
         }
         return render(vars)
       },
-      delete (type, database, table, columns, fields, where, order, limitType) {
+      delete (queryType, database, table, columns, fields, where, order, limitType, returnType) {
         let template = fs.readFileSync(path.join(__static, '/template/MySpot/DELETE.dot'), 'utf8')
         const render = doT.template(template)
         where = generateWhereTemplateVars(where)
@@ -322,18 +379,19 @@ export default {
     const daoTemplate = fs.readFileSync(path.join(__static, '/template/MySpot/DAOFragments.dot'), 'utf8')
     const dotRender = doT.template(daoTemplate)
 
-    const generalSelect = (render, queryName, type, database, table, columns, fields, where, order, limitType, argsType) => {
+    const generalSelect = (render, queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) => {
       const className = getDAOClassName(table)
-      const methodName = type
+      const methodName = queryType
       let args = getArgsFromWhereArray(where, columns)
       args = args.concat(getArgsFromOrderArray(order))
       args = args.concat(getArgsFromLimitType(limitType))
       const funcArgs = getFuncArgs(argsType, args)
       let required = getRequiredParamsFromWhereAndLimit(where, limitType)
+      const returnTemplate = getReturnTemplate(queryType, returnType, limitType, getDataObjectFullName(database, table))
       const vars = {
         className,
         queryName,
-        type,
+        queryType,
         database,
         table,
         funcArgs,
@@ -342,7 +400,7 @@ export default {
         argsType,
         required,
         methodName,
-        returnType: {type: getDataObjectFullName(database, table), comment: 'Data Object'},
+        returnTemplate,
         fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
         daoNamespace: getDAONamespace(database),
         baseDAOName: getBaseDAOName()
@@ -351,20 +409,21 @@ export default {
     }
 
     const daoGenerations = {
-      select (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
+      select (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
         return generalSelect(dotRender, ...arguments)
       },
-      selectCount (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
+      selectCount (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
         const className = getDAOClassName(table)
         const methodName = 'select'
         let args = getArgsFromWhereArray(where, columns)
         let required = []
-        limitType = 'LIMIT_ONE'
+        limitType = 'limitOne'
         const funcArgs = getFuncArgs(argsType, args)
+        const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
         const vars = {
           className,
           queryName,
-          type,
+          queryType,
           database,
           table,
           funcArgs,
@@ -373,14 +432,14 @@ export default {
           argsType,
           required,
           methodName,
-          returnType: {type: 'int', comment: 'Counted lines'},
+          returnTemplate,
           fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
           daoNamespace: getDAONamespace(database),
           baseDAOName: getBaseDAOName()
         }
         return dotRender(vars)
       },
-      insert (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
+      insert (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
         const className = getDAOClassName(table)
         const methodName = 'insert'
         let required = []
@@ -393,12 +452,13 @@ export default {
         } else {
           args = getArgsFromFieldsArray(fields, columns)
         }
-        limitType = 'LIMIT_ONE'
+        limitType = 'limitOne'
+        const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
         const funcArgs = getFuncArgs(argsType, args, database, table)
         const vars = {
           className,
           queryName,
-          type,
+          queryType,
           database,
           table,
           funcArgs,
@@ -407,14 +467,14 @@ export default {
           argsType,
           required,
           methodName,
-          returnType: {type: 'int', comment: 'Last insert ID'},
+          returnTemplate,
           fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
           daoNamespace: getDAONamespace(database),
           baseDAOName: getBaseDAOName()
         }
         return dotRender(vars)
       },
-      update (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
+      update (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
         const className = getDAOClassName(table)
         const methodName = 'update'
 
@@ -440,11 +500,12 @@ export default {
 
         let required = fields.map(item => convertNameWithPrefix(item, 'new'))
         required = required.concat(getRequiredParamsFromWhereAndLimit(where, limitType))
+        const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
 
         const vars = {
           className,
           queryName,
-          type,
+          queryType,
           database,
           table,
           funcArgs,
@@ -453,7 +514,7 @@ export default {
           argsType,
           required,
           methodName,
-          returnType: {type: 'int', comment: 'Affected lines'},
+          returnTemplate,
           fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
           updateArguments,
           daoNamespace: getDAONamespace(database),
@@ -462,7 +523,7 @@ export default {
 
         return dotRender(vars)
       },
-      delete (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
+      delete (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
         return generalSelect(dotRender, ...arguments)
       }
     }
@@ -497,30 +558,34 @@ export default {
         const code = render(vars)
         store.dispatch('generateDataObjectCode', code)
       },
-      generateMySpotSQL (type, database, table, columns, fields, where, order, limitType, argsType) {
-        const code = queryGenerations[type](...arguments)
+      generateMySpotSQL (queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
+        const code = queryGenerations[queryType](...arguments)
+        const sqlTemplate = code.replace(/\r?\n+/g, `\n`)
         const sqlTemplateInline = code.replace(/\r?\n+/g, '')
         const {configTemplate, configTemplateItem, queryName} = dotBridge.generateConfig(...arguments, sqlTemplateInline)
+        const mixedSql = `# Expanded SQL Template \n\n${sqlTemplate}\n\n\n# Single Line SQL Template\n\n${sqlTemplateInline}`
         store.dispatch('generateSQLTemplate', {
-          sqlTemplate: code.replace(/\r?\n+/g, `\n`),
+          sqlTemplate,
           sqlTemplateInline,
+          mixedSql,
           configTemplate,
           configTemplateItem,
           queryName
         })
         dotBridge.generateDaoCode(queryName, ...arguments)
       },
-      generateConfig (type, database, table, columns, fields, where, order, limitType, argsType, code) {
+      generateConfig (queryType, database, table, columns, fields, where, order, limitType, argsType, returnType, code) {
         const exampleFilename = getExampleConfigFilename(database, table)
         const configTemplateName = getConfigTemplateName(database, table)
         const joinedFields = fields.map(item => ucfirst(underscoreToCamelCase(item))).join('')
         const whereFields = where.map(item => ucfirst(underscoreToCamelCase(item.name))).join('')
-        const queryName = type + joinedFields + (whereFields.length > 0 ? 'By' + whereFields : '')
+        const queryName = queryType + joinedFields + (whereFields.length > 0 ? 'By' + whereFields : '')
         const vars = {
-          type,
+          queryType,
           exampleFilename,
           queryName,
           sqlTemplate: code,
+          returnType,
           dataObjectName: getDataObjectFullName(database, table)
         }
         let template = fs.readFileSync(path.join(__static, '/template/MySpot/MySpotConfiguration.dot'), 'utf8')
@@ -529,8 +594,8 @@ export default {
         const configTemplateItem = configTemplate.match(/('\S+'\s*=>\s*\[[\s\S]+\])[\s\S]*,/m)[1]
         return {configTemplate, configTemplateItem, queryName, configTemplateName}
       },
-      generateDaoCode (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
-        const code = daoGenerations[type](...arguments)
+      generateDaoCode (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
+        const code = daoGenerations[queryType](...arguments)
         const baseDAOCode = generateBaseDAOTemplate()
         const daoMethodCode = code.match(/\{\s+( {4}\/[\s\S]+public function[\s\S]+\})\s+\}$/m)[1]
         store.dispatch('generateDaoCode', {code, baseDAOCode, daoMethodCode})

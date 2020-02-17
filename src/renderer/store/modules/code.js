@@ -2,6 +2,7 @@ const state = {
   dataObjectCode: '',
   sqlTemplate: '',
   sqlTemplateInline: '',
+  mixedSql: '',
   configTemplate: '',
   configTemplateItem: '',
   configTemplateName: '',
@@ -18,6 +19,7 @@ const mutations = {
   GENERATE_SQL_TEMPLATE (state, payload) {
     state.sqlTemplate = payload.sqlTemplate
     state.sqlTemplateInline = payload.sqlTemplateInline
+    state.mixedSql = payload.mixedSql
     state.configTemplate = payload.configTemplate
     state.configTemplateItem = payload.configTemplateItem
     state.configTemplateName = payload.configTemplateName

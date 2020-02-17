@@ -2,7 +2,6 @@
 
 namespace {{=it.daoNamespace}};
 
-use Exception;
 use MySpot\SqlMapConst;
 use {{=it.baseDAOName}};
 
@@ -15,8 +14,8 @@ class {{=it.className}} extends BaseDAO {
      * Execute the query '{{=it.fullQueryName}}'
      * {{~it.funcArgs :item:index}}
      * @param {{=item.type}} ${{=item.name}}{{?item.condition}} Determine to enable {{=item.conditionType}} by `{{=item.conditionFieldName}}`{{?}}{{~}}
-     * @return {{=it.returnType.type}}{{?it.limit !== 'LIMIT_ONE' && it.type !== 'selectCount'}}[]{{?}} {{=it.returnType.comment}}
-     * @throws Exception
+     * @return {{=it.returnTemplate.commentReturnType}}{{?it.returnTemplate.isArray && it.returnTemplate.commentReturnType !== 'array'}}[]{{?}} {{=it.returnTemplate.comment}}
+     * @throws \Exception
      */
     public function {{=it.queryName}}({{~it.funcArgs :item:index}}?{{=item.type}} ${{=item.name}}{{?index < it.funcArgs.length - 1}}, {{?}}{{~}})
     {{{?it.required.length > 0 || it.argsType === 'array'}}
@@ -36,16 +35,9 @@ class {{=it.className}} extends BaseDAO {
             '{{=item.keyName}}' => [${{=item.name}}, {{=item.pdoType}}]{{?index < it.args.length - 1}}, {{?}}{{~}}
         ]{{??}}[]{{?}}{{?}}{{?it.argsType === 'array' || it.argsType === 'do'}}$sqlArguments{{?}}{{?it.updateArguments && it.updateArguments.length}}, [{{~it.updateArguments :item:index}}
             '{{=item.keyName}}' => [${{=item.name}}, {{=item.pdoType}}]{{?index < it.updateArguments.length - 1}}, {{?}}{{~}}
-        ]{{?}}{{?it.type === 'update' && it.argsType === 'array' && it.args.length === 0}} ,$updateArguments{{?}});
-        {{?it.type === 'selectCount'}}
-        return $sqlMapResult->fetchColumn();
-        {{??it.type === 'select'}}{{?it.limitType === 'LIMIT_ONE'}}
-        return $sqlMapResult->fetch();{{??}}
-        return $sqlMapResult->fetchAll();{{?}}
-        {{??it.type === 'insert'}}
-        return $sqlMapResult->getLastInsertId();
-        {{??it.type === 'update' || it.type === 'delete'}}
-        return $sqlMapResult->getAffectedLines();{{?}}
+        ]{{?}}{{?it.queryType === 'update' && it.argsType === 'array' && it.args.length === 0}} ,$updateArguments{{?}});
+
+        {{?it.returnTemplate.returnType === 'sqlMapResult'}}return $sqlMapResult;{{??it.returnTemplate.returnType === 'lines'}}return $sqlMapResult->getAffectedLines();{{??it.returnTemplate.returnType === 'lastInsertId'}}return $sqlMapResult->getLastInsertId();{{??it.returnTemplate.returnType === 'onlyValue'}}return $sqlMapResult->fetchColumn();{{??it.returnTemplate.isArray}}return $sqlMapResult->fetchAll();{{??}}return $sqlMapResult->fetch();{{?}}
     }
 
 }

@@ -3,8 +3,8 @@
 Use MySpot\SqlMapStatement;
 return [
     '{{=it.queryName}}' => [
-        'sql' => '{{=it.sqlTemplate}}'{{?it.type === 'select'}},
-        'resultType' => {{=it.dataObjectName}}::class,
+        'sql' => '{{=it.sqlTemplate}}'{{?it.queryType === 'select'}},
+        'resultType' => {{?it.returnType === 'do' || it.returnType === 'sqlMapResult'}}{{=it.dataObjectName}}::class{{??it.returnType === 'stdClass'}}\stdClass::class{{??it.returnType === 'array' || it.returnType === 'onlyValue'}}array{{?}},
         'resultMapStyle' => SqlMapStatement::MAP_STYLE_UNDERSCORE_TO_LOWER_CAMELCASE{{?}}
     ],
 ];
