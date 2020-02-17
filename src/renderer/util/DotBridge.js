@@ -47,7 +47,7 @@ const getBaseNamespace = () => {
 }
 
 const getDataObjectFullName = (database, table) => {
-  return '\\' + getBaseNamespace() + '\\DataObject\\' + ucfirst(underscoreToCamelCase(database)) + '\\' + ucfirst(underscoreToCamelCase(table)) + 'DO'
+  return '\\' + getBaseNamespace() + 'DataObject\\' + ucfirst(underscoreToCamelCase(database)) + '\\' + ucfirst(underscoreToCamelCase(table)) + 'DO'
 }
 
 const getBaseDAOName = () => {
@@ -230,7 +230,7 @@ const getFuncArgs = (limitType, incomingArgs = [], database = null, table = null
   } else if (limitType === 'array') {
     funcArgs.push({name: overrideName || 'sqlArguments', type: 'array', condition: false})
   } else if (limitType === 'do') {
-    funcArgs.push({name: 'sourceObject', type: '\\' + getDataObjectFullName(database, table), condition: false})
+    funcArgs.push({name: 'sourceObject', type: getDataObjectFullName(database, table), condition: false})
   }
   return funcArgs
 }
