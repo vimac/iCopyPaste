@@ -3,6 +3,7 @@ const state = {
   sqlTemplate: '',
   sqlTemplateInline: '',
   configTemplate: '',
+  configTemplateItem: '',
   configTemplateName: '',
   queryName: '',
   daoCode: '',
@@ -18,6 +19,7 @@ const mutations = {
     state.sqlTemplate = payload.sqlTemplate
     state.sqlTemplateInline = payload.sqlTemplateInline
     state.configTemplate = payload.configTemplate
+    state.configTemplateItem = payload.configTemplateItem
     state.configTemplateName = payload.configTemplateName
     state.queryName = payload.queryName
   },

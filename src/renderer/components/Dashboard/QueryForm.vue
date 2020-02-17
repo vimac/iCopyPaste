@@ -62,7 +62,8 @@
         </TabPane>
         <TabPane label="Config" class="codeTab">
           <ButtonGroup class="copyCode">
-            <Button @click="onCopyConfig" size="small" icon="ios-copy-outline">Config</Button>
+            <Button @click="onCopyConfig" size="small" icon="ios-copy-outline">Whole file</Button>
+            <Button @click="onCopyConfigItem" size="small" icon="ios-copy-outline">Single item</Button>
           </ButtonGroup>
           <CodeHighlight language="php">
             {{configTemplate}}
@@ -113,6 +114,7 @@
         sqlTemplateInline: state => state.code.sqlTemplateInline,
         mixedSql: state => (`# Expanded SQL Template \n\n${state.code.sqlTemplate}\n\n\n# Single Line SQL Template\n\n${state.code.sqlTemplateInline}`),
         configTemplate: state => state.code.configTemplate,
+        configTemplateItem: state => state.code.configTemplateItem,
         queryName: state => state.code.queryName,
         daoCode: state => state.code.daoCode,
         daoMethodCode: state => state.code.daoMethodCode,
@@ -176,6 +178,10 @@
       onCopyConfig () {
         require('electron').clipboard.writeText(this.configTemplate)
         this.$Message.info('Configuration template copied to clipboard')
+      },
+      onCopyConfigItem () {
+        require('electron').clipboard.writeText(this.configTemplateItem)
+        this.$Message.info('Single configuration item copied to clipboard')
       },
       onCopyDAO () {
         require('electron').clipboard.writeText(this.daoCode)

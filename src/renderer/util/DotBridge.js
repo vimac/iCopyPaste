@@ -500,11 +500,12 @@ export default {
       generateMySpotSQL (type, database, table, columns, fields, where, order, limitType, argsType) {
         const code = queryGenerations[type](...arguments)
         const sqlTemplateInline = code.replace(/\r?\n+/g, '')
-        const {configTemplate, queryName} = dotBridge.generateConfig(...arguments, sqlTemplateInline)
+        const {configTemplate, configTemplateItem, queryName} = dotBridge.generateConfig(...arguments, sqlTemplateInline)
         store.dispatch('generateSQLTemplate', {
           sqlTemplate: code.replace(/\r?\n+/g, `\n`),
           sqlTemplateInline,
           configTemplate,
+          configTemplateItem,
           queryName
         })
         dotBridge.generateDaoCode(queryName, ...arguments)
@@ -524,8 +525,9 @@ export default {
         }
         let template = fs.readFileSync(path.join(__static, '/template/MySpot/MySpotConfiguration.dot'), 'utf8')
         const render = doT.template(template)
-        let configTemplate = render(vars)
-        return {configTemplate, queryName, configTemplateName}
+        const configTemplate = render(vars)
+        const configTemplateItem = configTemplate.match(/('\S+'\s*=>\s*\[[\s\S]+\])[\s\S]*,/m)[1]
+        return {configTemplate, configTemplateItem, queryName, configTemplateName}
       },
       generateDaoCode (queryName, type, database, table, columns, fields, where, order, limitType, argsType) {
         const code = daoGenerations[type](...arguments)
