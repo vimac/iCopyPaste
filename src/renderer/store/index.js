@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
-import { createPersistedState, createSharedMutations } from 'vuex-electron'
+// vuex-electron lost maintenance and its persistedState is buggy
+// import {createPersistedState, createSharedMutations} from 'vuex-electron'
+import {createSharedMutations} from 'vuex-electron'
+import createPersistedState from './yet-another-persisted-state'
 
 import modules from './modules'
 
@@ -11,7 +13,11 @@ export default new Vuex.Store({
   modules,
   plugins: [
     createPersistedState({
-      blacklist: (mutation) => true
+      storageKey: 'i-copy-paste',
+      whitelist: [
+        {mutation: 'ADD_CONNECTION', watchStateKey: 'store'},
+        {mutation: 'SET_CONNECTIONS', watchStateKey: 'store'}
+      ]
     }),
     createSharedMutations()
   ],

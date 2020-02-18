@@ -8,6 +8,7 @@ export default {
       if (mutation.type === 'SUBMIT_CONFIG' && state.db.config.host !== undefined && state.db.config.host !== null) {
         const {database, host, port, user, pass} = state.db.config
         try {
+          sequelize = null
           sequelize = new Sequelize(database, user, pass, {
             host: host,
             port: port,

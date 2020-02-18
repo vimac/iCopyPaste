@@ -2,14 +2,15 @@
   <Layout id="container">
     <Button id="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
     <Sider id="sidebar" ref="sidebar" collapsible hide-trigger v-model="sidebarCollapsed" :collapsed-width="0">
-      <Card class="sideCard" title="Connection" icon="ios-information-circle-outline" shadow>
-        <div class="panelInfo">
+      <Card class="sideCard" title="Connection" :padding="0" icon="ios-information-circle-outline" shadow>
+        <div class="infoPanel">
           <p>Server: {{config.host + ':' + config.port}}</p>
           <p>Database: {{config.database}}</p>
+          <p><span class="extra" @click="changeServer">Change</span></p>
         </div>
       </Card>
-      <Card class="sideCard" title="Target" icon="ios-information-circle-outline" shadow>
-        <div class="panelInfo">
+      <Card class="sideCard" title="Target" :padding="0" icon="ios-star-outline" shadow>
+        <div class="infoPanel">
           <p>Template: MySpot</p>
           <p>Language: PHP</p>
         </div>
@@ -18,7 +19,7 @@
         <div id="filterPanel">
           <Input placeholder="filter" size="small" icon="ios-search" v-model="tableFilter"/>
         </div>
-        <CellGroup @on-click="onSelectTable">
+        <CellGroup>
           <Cell v-for="{name, comment} in tables"
                 v-if="tableFilter === '' || name.indexOf(tableFilter) > -1"
                 :name="name"
@@ -37,7 +38,7 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+  import {mapActions, mapState} from 'vuex'
 
   export default {
     name: 'Dashboard',
@@ -69,10 +70,13 @@
       }
     },
     methods: {
-      onSelectTable (tableName) {
-      },
+      ...mapActions(['submitConnectionStatus']),
       sidebarCollapseSwitch () {
         this.$refs.sidebar.toggleCollapse()
+      },
+      changeServer () {
+        this.submitConnectionStatus({connected: 'no'})
+        this.$router.push('/')
       }
     }
   }
@@ -102,8 +106,13 @@
     overflow-y: auto;
   }
 
-  .panelInfo {
+  .ivu-card-body {
+    padding: 5px 10px !important;
+  }
+
+  .infoPanel {
     font-size: 10px;
+    padding: 5px 10px;
   }
 
   .sideCard {
@@ -116,6 +125,16 @@
 
   #filterPanel {
     padding: 6px 10px 4px;
+  }
+
+  span.extra {
+    color: #3a3d3f;
+    font-weight: bold;
+  }
+
+  span.extra:hover {
+    color: #3a5fff;
+    cursor: pointer;
   }
 
 
