@@ -1,54 +1,52 @@
 <template>
   <div id="wrapper">
-    <Modal
-            v-model="modalInfoDisplay"
-            title="Connect to a MySQL server"
-            ref="modalInfo"
-            :loading="true"
-            :mask-closable="false"
-            :closable="false"
-            class-name="vertical-center-modal"
-            @on-ok="doConnect">
-      <Layout id="modalContent">
-        <Sider id="historyList">
-          <CellGroup @on-click="onSelectHistoryItem">
-            <Cell v-for="({host, port, database, user}, index) in storedList"
-                  :title="host + ':' + port"
-                  :label="'u: ' + user + ' db: ' + database"
-                  :name="index"
-            >
-              <Button slot="extra" shape="circle" size="small" icon="ios-close" ghost
-                      @click.stop="eraseStored(index)"/>
-            </Cell>
-          </CellGroup>
-        </Sider>
-        <div>
-          <Form ref="form" :model="inputConfig" :rules="formRules" :label-width=90 :disabled="disableForm">
-            <FormItem prop="host" label="Host">
-              <Input type="text" v-model="inputConfig.host" placeholder="Host"/>
-            </FormItem>
-            <FormItem prop="port" label="Port">
-              <Input type="text" v-model="inputConfig.port" placeholder="Port"/>
-            </FormItem>
-            <FormItem prop="database" label="Database">
-              <Input type="text" v-model="inputConfig.database" placeholder="Database"/>
-            </FormItem>
-            <FormItem prop="username" label="Username">
-              <Input type="text" v-model="inputConfig.user" placeholder="Username"/>
-            </FormItem>
-            <FormItem prop="password" label="Password">
-              <Input type="password" v-model="inputConfig.pass" placeholder="Password"/>
-            </FormItem>
-            <FormItem prop="save" label="Save">
-              <Checkbox v-model="saveForm"/>
-            </FormItem>
-          </Form>
-        </div>
-      </Layout>
-      <div slot="footer">
-        <Button type="primary" :loading="modalLoading" @click="doConnect">OK</Button>
+    <div id="loginPanel">
+      <div id="titlePanel">
+        Connect to a MySQL Database
       </div>
-    </Modal>
+      <div id="historyList">
+        <div id="noStored" v-if="storedList.length === 0">No saved connection</div>
+        <CellGroup @on-click="onSelectHistoryItem">
+          <Cell v-for="({host, port, database, user}, index) in storedList"
+                :title="host + ':' + port"
+                :name="index"
+          >
+            <div slot="label">
+              <Icon type="ios-person-outline"/>
+              {{user}}
+              <Icon type="ios-folder-outline"/>
+              {{database}}
+            </div>
+            <Icon class="deleteSaved" slot="extra" type="ios-close" @click.stop="eraseStored(index)"/>
+          </Cell>
+        </CellGroup>
+      </div>
+      <div id="formPanel">
+        <Form ref="form" :model="inputConfig" :rules="formRules" :label-width=90 :disabled="disableForm">
+          <FormItem prop="host" label="Host">
+            <Input type="text" v-model="inputConfig.host" placeholder="Host"/>
+          </FormItem>
+          <FormItem prop="port" label="Port">
+            <Input type="text" v-model="inputConfig.port" placeholder="Port"/>
+          </FormItem>
+          <FormItem prop="database" label="Database">
+            <Input type="text" v-model="inputConfig.database" placeholder="Database"/>
+          </FormItem>
+          <FormItem prop="username" label="Username">
+            <Input type="text" v-model="inputConfig.user" placeholder="Username"/>
+          </FormItem>
+          <FormItem prop="password" label="Password">
+            <Input type="password" v-model="inputConfig.pass" placeholder="Password"/>
+          </FormItem>
+          <FormItem prop="save" label="Save">
+            <Checkbox v-model="saveForm"/>
+          </FormItem>
+          <FormItem>
+            <Button type="primary" :loading="modalLoading" @click="doConnect">OK</Button>
+          </FormItem>
+        </Form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -136,25 +134,67 @@
 </script>
 
 <style lang="scss" scoped>
-  .vertical-center-modal{
+  #wrapper {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(45deg, #2B2B2B 25%, #3C3F41 0, #3C3F41 50%, #2B2B2B 0, #2B2B2B 75%, #3C3F41 0);
+    background-size: 4.2px 4.2px;
+  }
 
-    .ivu-modal{
-      top: 0;
-    }
+  #loginPanel {
+    width: 600px;
+    height: 350px;
+    display: flex;
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 10px;
+    flex-wrap: wrap;
+    box-sizing: content-box;
+  }
+
+  #titlePanel {
+    width: 600px;
+    font-weight: bold;
+    line-height: 30px;
+    height: 30px;
+    text-align: center;
+    background: #3C3F41;
+    color: #ccc;
+    margin-bottom: 5px;
+    border-radius: 5px;
+  }
+
+  #historyList {
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 250px;
+    height: 315px;
+    border-right: 1px dotted #ccc;
+  }
+
+  #formPanel {
+    flex-basis: 350px;
+  }
+
+  #noStored {
+    color: #ccc;
+  }
+
+  .deleteSaved {
+    font-size: 24px;
+    color: #ccc;
+  }
+
+  .deleteSaved:hover {
+    color: red;
   }
 
   .ivu-form-item {
     margin-bottom: 12px;
-  }
-
-  #historyList {
-    background: #fafafa;
-    overflow-y: auto;
-    overflow-x: hidden;
-    box-sizing: border-box;
   }
 
   form {

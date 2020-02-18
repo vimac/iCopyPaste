@@ -6,10 +6,10 @@
         <div class="infoPanel">
           <p>Server: {{config.host + ':' + config.port}}</p>
           <p>Database: {{config.database}}</p>
-          <p><span class="extra" @click="changeServer">Change</span></p>
+          <p><span class="extra" @click="changeServer">Disconnect</span></p>
         </div>
       </Card>
-      <Card class="sideCard" title="Target" :padding="0" icon="ios-star-outline" shadow>
+      <Card class="sideCard" title="Target" :padding="0" icon="ios-construct-outline" shadow>
         <div class="infoPanel">
           <p>Template: MySpot</p>
           <p>Language: PHP</p>
@@ -98,7 +98,8 @@
 
   #sidebar {
     width: 220px;
-    background: #e7e7e7;
+    background: linear-gradient(45deg, #2B2B2B 25%, #3C3F41 0, #3C3F41 50%, #2B2B2B 0, #2B2B2B 75%, #3C3F41 0);
+    background-size: 4.2px 4.2px;
     padding: 10px;
     box-sizing: border-box;
     white-space: nowrap;
@@ -130,6 +131,7 @@
   span.extra {
     color: #3a3d3f;
     font-weight: bold;
+    display: block;
   }
 
   span.extra:hover {
