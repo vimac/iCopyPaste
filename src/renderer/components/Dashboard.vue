@@ -60,7 +60,7 @@
       return {
         sidebarCollapsed: false,
         tableFilter: '',
-        enableSettings: true
+        enableSettings: false
       }
     },
     beforeMount () {
