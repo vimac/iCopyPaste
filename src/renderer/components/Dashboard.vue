@@ -2,17 +2,18 @@
   <Layout id="container">
     <Button id="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
     <Sider id="sidebar" ref="sidebar" collapsible hide-trigger v-model="sidebarCollapsed" :collapsed-width="0">
-      <Card class="sideCard" title="Connection" :padding="0" icon="ios-information-circle-outline" shadow>
+      <Card class="sideCard" title="Connection" :padding="0" icon="ios-construct-outline" shadow>
         <div class="infoPanel">
           <p>Server: {{config.host + ':' + config.port}}</p>
           <p>Database: {{config.database}}</p>
-          <p><span class="extra" @click="changeServer">Disconnect</span></p>
-        </div>
-      </Card>
-      <Card class="sideCard" title="Target" :padding="0" icon="ios-construct-outline" shadow>
-        <div class="infoPanel">
-          <p>Template: MySpot</p>
+          <hr/>
+          <p>Target template: MySpot</p>
           <p>Language: PHP</p>
+          <hr/>
+          <p>
+            <span class="extra" @click="showSettings"><Icon type="ios-settings-outline"/> SETTINGS</span>
+            <span class="extra" @click="changeServer"><Icon type="ios-exit-outline"/> DISCONNECT</span>
+          </p>
         </div>
       </Card>
       <Card class="sideCard" title="Tables" :padding="0" icon="ios-list-box-outline" shadow>
@@ -34,14 +35,20 @@
     <Layout id="workingArea">
       <router-view/>
     </Layout>
+    <Modal v-model="enableSettings" class-name="vertical-center-modal" id="settingsDialog">
+      <SettingsDialog/>
+      <span slot="footer"/>
+    </Modal>
   </Layout>
 </template>
 
 <script>
   import {mapActions, mapState} from 'vuex'
+  import SettingsDialog from './Settings/SettingsDialog'
 
   export default {
     name: 'Dashboard',
+    components: {SettingsDialog},
     computed: {
       ...mapState({
         config: state => state.db.config,
@@ -52,7 +59,8 @@
     data () {
       return {
         sidebarCollapsed: false,
-        tableFilter: ''
+        tableFilter: '',
+        enableSettings: true
       }
     },
     beforeMount () {
@@ -74,9 +82,14 @@
       sidebarCollapseSwitch () {
         this.$refs.sidebar.toggleCollapse()
       },
+      showSettings () {
+        this.enableSettings = true
+      },
       changeServer () {
-        this.submitConnectionStatus({connected: 'no'})
-        this.$router.push('/')
+        this.$conn.close().then(() => {
+          this.submitConnectionStatus({connected: 'no'})
+          this.$router.push('/')
+        })
       }
     }
   }
@@ -93,7 +106,7 @@
     position: fixed;
     left: 10px;
     bottom: 10px;
-    z-index: 10000;
+    z-index: 100;
   }
 
   #sidebar {
@@ -131,7 +144,7 @@
   span.extra {
     color: #3a3d3f;
     font-weight: bold;
-    display: block;
+    display: inline-block;
   }
 
   span.extra:hover {
@@ -139,5 +152,12 @@
     cursor: pointer;
   }
 
+  hr {
+    border-top: 1px dotted #ddd;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    margin: 5px 0;
+  }
 
 </style>

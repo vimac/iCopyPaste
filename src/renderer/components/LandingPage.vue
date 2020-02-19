@@ -12,10 +12,10 @@
                 :name="index"
           >
             <div slot="label">
-              <Icon type="ios-person-outline"/>
-              {{user}}
               <Icon type="ios-folder-outline"/>
               {{database}}
+              <Icon type="ios-person-outline"/>
+              {{user}}
             </div>
             <Icon class="deleteSaved" slot="extra" type="ios-close" @click.stop="eraseStored(index)"/>
           </Cell>
@@ -82,7 +82,7 @@
       }
     },
     mounted () {
-      // this.$refs['modalInfo'].$emit('on-ok') // auto connect in development env
+      this.doConnect() // auto connect in development env
     },
     data () {
       return {
@@ -146,7 +146,6 @@
 
   #loginPanel {
     width: 600px;
-    height: 350px;
     display: flex;
     background: #fafafa;
     border-radius: 10px;
@@ -172,7 +171,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     width: 250px;
-    height: 315px;
+    height: 384px;
     border-right: 1px dotted #ccc;
   }
 
@@ -194,7 +193,6 @@
   }
 
   .ivu-form-item {
-    margin-bottom: 12px;
   }
 
   form {

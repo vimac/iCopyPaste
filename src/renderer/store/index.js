@@ -16,7 +16,8 @@ export default new Vuex.Store({
       storageKey: 'i-copy-paste',
       whitelist: [
         {mutation: 'ADD_CONNECTION', watchStateKey: 'store'},
-        {mutation: 'SET_CONNECTIONS', watchStateKey: 'store'}
+        {mutation: 'SET_CONNECTIONS', watchStateKey: 'store'},
+        {mutation: 'SUBMIT_SETTINGS', watchStateKey: 'settings'}
       ]
     }),
     createSharedMutations()

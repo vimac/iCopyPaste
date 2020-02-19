@@ -101,6 +101,9 @@ export default {
             console.warn(err)
           }
         )
+      },
+      close () {
+        return sequelize.close()
       }
     }
   }
