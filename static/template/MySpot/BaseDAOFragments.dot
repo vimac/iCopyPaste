@@ -8,10 +8,10 @@ use MySpot\SqlMapConfig;
 use MySpot\SqlMapStatement;
 
 /**
- * This file is just a example of BaseDAO
+ * This file is just a example of {{=it.shortBaseDAOName}}
  * You can modify all of these code to fit your web application
  */
-abstract class BaseDAO {
+abstract class {{=it.shortBaseDAOName}} {
 
     /**
      * @var SqlMapConfig

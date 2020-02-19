@@ -1,6 +1,6 @@
 <?php
 
-namespace MyProject\DataObject\{{=it.database}};
+namespace {{=it.doNamespace}};
 
 class {{=it.className}} {
 {{~it.columns :item:index}}

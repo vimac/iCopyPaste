@@ -82,7 +82,7 @@
       }
     },
     mounted () {
-      this.doConnect() // auto connect in development env
+      // this.doConnect() // auto connect in development env
     },
     data () {
       return {

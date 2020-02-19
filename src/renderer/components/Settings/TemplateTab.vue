@@ -6,25 +6,25 @@
       </Select>
     </FormItem>
     <FormItem label="Root Namespace">
-      <Input :value="settings.myspot.root" name="root" @on-change="onTemplateChange" type="text" size="small"/>
+      <Input :value="settings.myspot.root" name="root" @on-blur="onTemplateChange" type="text" size="small"/>
     </FormItem>
     <FormItem label="Data Object Suffix">
-      <Input :value="settings.myspot.doSuffix" name="doSuffix" @on-change="onTemplateChange" type="text" size="small"/>
+      <Input :value="settings.myspot.doSuffix" name="doSuffix" @on-blur="onTemplateChange" type="text" size="small"/>
     </FormItem>
     <FormItem label="Data Object Namespace">
-      <Input :value="settings.myspot.doNamespace" name="doNamespace" @on-change="onTemplateChange" type="text"
+      <Input :value="settings.myspot.doNamespace" name="doNamespace" @on-blur="onTemplateChange" type="text"
              size="small"/>
     </FormItem>
     <FormItem label="DAO Suffix">
-      <Input :value="settings.myspot.daoSuffix" name="daoSuffix" @on-change="onTemplateChange" type="text"
+      <Input :value="settings.myspot.daoSuffix" name="daoSuffix" @on-blur="onTemplateChange" type="text"
              size="small"/>
     </FormItem>
     <FormItem label="DAO Namespace">
-      <Input :value="settings.myspot.daoNamespace" name="daoNamespace" @on-change="onTemplateChange" type="text"
+      <Input :value="settings.myspot.daoNamespace" name="daoNamespace" @on-blur="onTemplateChange" type="text"
              size="small"/>
     </FormItem>
     <FormItem label="Base DAO Namespace">
-      <Input :value="settings.myspot.baseDaoNamespace" name="baseDaoNamespace" @on-change="onTemplateChange" type="text"
+      <Input :value="settings.myspot.baseDaoNamespace" name="baseDaoNamespace" @on-blur="onTemplateChange" type="text"
              size="small"/>
     </FormItem>
     <FormItem>
@@ -66,9 +66,18 @@
       },
       onTemplateChange (event) {
         const {name, value} = event.target
-        let item = {}
-        item[name] = value
-        this.submitSettings(item)
+
+        /** const availableVars = ['root', 'database', 'table']
+        let result = []
+        const regVar = /\${(\w+?)}/g
+        let m = null
+        while ((m = regVar.exec(value)) !== null) {
+          result.push(m)
+        }
+        result.map(item => item[1]).forEach(item => {
+        }) */
+
+        this.submitSettings({[name]: value})
       }
     }
   }

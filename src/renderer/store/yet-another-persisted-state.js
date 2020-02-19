@@ -27,7 +27,7 @@ class YetAnotherPersistedState {
   }
 
   setState (state, whitelist) {
-    let targetState = {}
+    let targetState = this.getState()
     whitelist.forEach(({watchStateKey}) => {
       targetState[watchStateKey] = state[watchStateKey]
     })

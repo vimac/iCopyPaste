@@ -8,6 +8,13 @@ import store from '../store'
 const underscoreToCamelCase = str => str.replace(/_([a-z])/g, x => x[1].toUpperCase())
 const ucfirst = str => str.replace(/^./, x => x[0].toUpperCase())
 
+let rootNS = 'MyProject'
+let doSuffix = 'DO'
+let daoSuffix = 'DAO'
+let doNamespaceTemplate = '{{=it.root}}\\DataObject\\{{=it.database}}'
+let daoNamespaceTemplate = '{{=it.root}}\\DAO\\{{=it.database}}'
+let baseDaoNamespaceTemplate = '{{=it.root}}\\DAO'
+
 const convertSQLTypeToNative = (sqlType) => {
   if (/(?:BOOL)/i.test(sqlType)) {
     return 'bool'
@@ -32,8 +39,6 @@ const convertSQLTypeToPDOType = (sqlType) => {
 
 const convertNameWithPrefix = (name, prefix) => prefix ? prefix + ucfirst(underscoreToCamelCase(name)) : underscoreToCamelCase(name)
 
-const getDAOClassName = table => ucfirst(underscoreToCamelCase(table)) + 'DAO'
-
 const getExampleConfigFilename = (database, table, suffix = '.php') => {
   return 'config/myspot/' + database + '/' + table + suffix
 }
@@ -42,28 +47,48 @@ const getOptionalName = (prefix, variableName) => {
   return prefix + ucfirst(underscoreToCamelCase(variableName))
 }
 
-const getBaseNamespace = () => {
-  return 'MyProject\\'
+const getDataObjectShortName = (database, table) => {
+  return ucfirst(underscoreToCamelCase(table)) + doSuffix
+}
+
+const getDataObjectNamespace = (database) => {
+  const vars = {
+    root: rootNS,
+    database: ucfirst(underscoreToCamelCase(database))
+  }
+  const render = doT.template(doNamespaceTemplate)
+  return render(vars)
 }
 
 const getDataObjectFullName = (database, table) => {
-  return '\\' + getBaseNamespace() + 'DataObject\\' + ucfirst(underscoreToCamelCase(database)) + '\\' + ucfirst(underscoreToCamelCase(table)) + 'DO'
-}
-
-const getBaseDAOName = () => {
-  return getBaseNamespace() + 'DAO\\BaseDAO'
-}
-
-const getBaseDAONamespace = (database) => {
-  return getBaseNamespace() + 'DAO'
+  return '\\' + getDataObjectNamespace(database) + '\\' + ucfirst(underscoreToCamelCase(table)) + doSuffix
 }
 
 const getDAONamespace = (database) => {
-  return getBaseNamespace() + 'DAO\\' + ucfirst(underscoreToCamelCase(database))
+  const vars = {
+    root: rootNS,
+    database: ucfirst(underscoreToCamelCase(database))
+  }
+  const render = doT.template(daoNamespaceTemplate)
+  return render(vars)
 }
 
-const getDataObjectShortName = (database, table) => {
-  return ucfirst(underscoreToCamelCase(table)) + 'DO'
+const getDAOShortName = table => ucfirst(underscoreToCamelCase(table)) + daoSuffix
+
+const getBaseDAONamespace = () => {
+  const vars = {
+    root: rootNS
+  }
+  const render = doT.template(baseDaoNamespaceTemplate)
+  return render(vars)
+}
+
+const getShortBaseDAOName = () => {
+  return 'Base' + daoSuffix
+}
+
+const getBaseDAOName = () => {
+  return getBaseDAONamespace() + '\\' + getShortBaseDAOName()
 }
 
 const getConfigTemplateName = (database, table) => database + '.' + table
@@ -321,9 +346,25 @@ const getReturnTemplate = (queryType, returnType, limitType, fullDataObjectName 
   return {isArray, commentReturnType, comment, realType, returnType}
 }
 
+const loadTemplate = (myspot) => {
+  rootNS = myspot.root
+  doSuffix = myspot.doSuffix
+  daoSuffix = myspot.daoSuffix
+  doNamespaceTemplate = myspot.doNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
+  daoNamespaceTemplate = myspot.daoNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
+  baseDaoNamespaceTemplate = myspot.baseDaoNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
+}
+
 export default {
   install (Vue, options) {
-    // do nothing
+    store.subscribe((mutation, state) => {
+      if (mutation.type === 'SUBMIT_SETTINGS') {
+        const {myspot} = state.settings
+        loadTemplate(myspot)
+      }
+    })
+    loadTemplate(store.state.settings.myspot)
+
     doT.templateSettings.strip = false
 
     let dotBridge = {}
@@ -379,9 +420,22 @@ export default {
     const daoTemplate = fs.readFileSync(path.join(__static, '/template/MySpot/DAOFragments.dot'), 'utf8')
     const dotRender = doT.template(daoTemplate)
 
+    const generateDAOBasicVars = (queryName, queryType, database, table) => {
+      return {
+        className: getDAOShortName(table),
+        queryName,
+        methodName: queryType,
+        queryType,
+        database,
+        table,
+        fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
+        daoNamespace: getDAONamespace(database),
+        baseDAOName: getBaseDAOName(),
+        shortBaseDAOName: getShortBaseDAOName()
+      }
+    }
+
     const generalSelect = (render, queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) => {
-      const className = getDAOClassName(table)
-      const methodName = queryType
       let args = getArgsFromWhereArray(where, columns)
       args = args.concat(getArgsFromOrderArray(order))
       args = args.concat(getArgsFromLimitType(limitType))
@@ -389,21 +443,12 @@ export default {
       let required = getRequiredParamsFromWhereAndLimit(where, limitType)
       const returnTemplate = getReturnTemplate(queryType, returnType, limitType, getDataObjectFullName(database, table))
       const vars = {
-        className,
-        queryName,
-        queryType,
-        database,
-        table,
         funcArgs,
         args,
-        limit: limitType,
         argsType,
         required,
-        methodName,
         returnTemplate,
-        fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
-        daoNamespace: getDAONamespace(database),
-        baseDAOName: getBaseDAOName()
+        ...generateDAOBasicVars(queryName, queryType, database, table)
       }
       return render(vars)
     }
@@ -413,35 +458,22 @@ export default {
         return generalSelect(dotRender, ...arguments)
       },
       selectCount (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
-        const className = getDAOClassName(table)
-        const methodName = 'select'
         let args = getArgsFromWhereArray(where, columns)
         let required = []
         limitType = 'limitOne'
         const funcArgs = getFuncArgs(argsType, args)
         const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
         const vars = {
-          className,
-          queryName,
-          queryType,
-          database,
-          table,
           funcArgs,
           args,
-          limitType,
           argsType,
           required,
-          methodName,
           returnTemplate,
-          fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
-          daoNamespace: getDAONamespace(database),
-          baseDAOName: getBaseDAOName()
+          ...generateDAOBasicVars(queryName, queryType, database, table)
         }
         return dotRender(vars)
       },
       insert (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
-        const className = getDAOClassName(table)
-        const methodName = 'insert'
         let required = []
         if (argsType === 'array') {
           required = fields
@@ -456,28 +488,16 @@ export default {
         const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
         const funcArgs = getFuncArgs(argsType, args, database, table)
         const vars = {
-          className,
-          queryName,
-          queryType,
-          database,
-          table,
           funcArgs,
           args,
-          limitType,
           argsType,
           required,
-          methodName,
           returnTemplate,
-          fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
-          daoNamespace: getDAONamespace(database),
-          baseDAOName: getBaseDAOName()
+          ...generateDAOBasicVars(queryName, queryType, database, table)
         }
         return dotRender(vars)
       },
       update (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
-        const className = getDAOClassName(table)
-        const methodName = 'update'
-
         let updateArguments = []
         let args = []
         let funcArgs = []
@@ -503,22 +523,13 @@ export default {
         const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
 
         const vars = {
-          className,
-          queryName,
-          queryType,
-          database,
-          table,
           funcArgs,
           args,
-          limitType,
           argsType,
           required,
-          methodName,
           returnTemplate,
-          fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
           updateArguments,
-          daoNamespace: getDAONamespace(database),
-          baseDAOName: getBaseDAOName()
+          ...generateDAOBasicVars(queryName, queryType, database, table)
         }
 
         return dotRender(vars)
@@ -531,7 +542,10 @@ export default {
     const generateBaseDAOTemplate = () => {
       let template = fs.readFileSync(path.join(__static, '/template/MySpot/BaseDAOFragments.dot'), 'utf8')
       const render = doT.template(template)
-      return render({baseDAONamespace: getBaseDAONamespace()})
+      return render({
+        baseDAONamespace: getBaseDAONamespace(),
+        shortBaseDAOName: getShortBaseDAOName()
+      })
     }
 
     dotBridge = {
@@ -553,7 +567,8 @@ export default {
         const vars = {
           className: getDataObjectShortName(database, tableName),
           columns: columns,
-          database: ucfirst(underscoreToCamelCase(database))
+          database: ucfirst(underscoreToCamelCase(database)),
+          doNamespace: getDataObjectNamespace(database)
         }
         const code = render(vars)
         store.dispatch('generateDataObjectCode', code)
