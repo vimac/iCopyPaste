@@ -1,11 +1,11 @@
 const state = {
-  tables: {},
+  tables: [],
   selected: ''
 }
 
 const mutations = {
   FETCHED_TABLES (state, payload) {
-    state.tables = Object.assign({}, state.tables, payload)
+    state.tables = payload
   },
   SELECT_TABLE (state, payload) {
     state.selected = payload

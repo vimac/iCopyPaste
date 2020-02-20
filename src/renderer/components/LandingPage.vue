@@ -57,9 +57,26 @@
     name: 'LandingPage',
     components: {},
     computed: {
-      ...mapState({config: state => state.db.config, storedList: state => state.store.storedList})
+      ...mapState({
+        config: state => state.db.config,
+        storedList: state => state.store.storedList,
+        tables: state => state.table.tables
+      })
     },
     watch: {
+      tables (newTables, oldTables) {
+        if (newTables.length === 0) {
+          this.$Message['warning'](
+            {
+              background: true,
+              content: 'Warning: no tables in the specific database'
+            }
+          )
+        }
+        this.modalInfoDisplay = false
+        this.disableForm = false
+        this.$router.push('/workspace/model')
+      },
       config (newConfig, oldConfig) {
         if (newConfig.connected === 'error') {
           this.$Message['error'](
@@ -75,14 +92,12 @@
           if (this.saveForm) {
             this.addConnection([this.inputConfig])
           }
-          this.modalInfoDisplay = false
-          this.$router.push('/dashboard/')
+          this.$conn.fetchTables(this.inputConfig.database)
         }
-        this.disableForm = false
       }
     },
     mounted () {
-      // this.doConnect() // auto connect in development env
+      this.doConnect() // auto connect in development env
     },
     data () {
       return {

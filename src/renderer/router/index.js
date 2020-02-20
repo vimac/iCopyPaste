@@ -6,23 +6,39 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/landing',
-      name: 'LandingPage',
-      component: require('@/components/LandingPage').default
+      path: '/',
+      redirect: '/landing'
     },
     {
-      path: '/dashboard/',
-      component: require('@/components/Dashboard').default,
+      path: '/landing',
+      name: 'LandingPage',
+      component: require('../components/LandingPage').default
+    },
+    {
+      path: '/workspace',
+      name: 'Workspace',
+      component: require('../components/Workspace').default,
       children: [
         {
-          path: '',
-          name: 'Dashboard',
-          component: require('@/components/Dashboard/Empty').default
+          path: 'model',
+          name: 'ModelPage',
+          component: require('../components/MainPage/ModelPage').default
         },
         {
-          path: ':table',
-          name: 'WorkingPanel',
-          component: require('@/components/Dashboard/WorkingPanel').default
+          path: 'query',
+          component: require('../components/MainPage/QueryPage').default,
+          children: [
+            {
+              path: '',
+              name: 'Empty',
+              component: require('../components/Dashboard/Empty').default
+            },
+            {
+              path: ':table',
+              name: 'WorkingPanel',
+              component: require('../components/Dashboard/WorkingPanel').default
+            }
+          ]
         }
       ]
     },
