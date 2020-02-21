@@ -1,15 +1,16 @@
 <template>
   <div id="frame">
     <div id="hint">Select a table from the menu to start</div>
-    <div id="codePoetry">
-      Code is poetry<br />
-    </div>
+    <CodeIsPoetry/>
   </div>
 </template>
 
 <script>
+  import CodeIsPoetry from '../Widget/CodeIsPoetry'
+
   export default {
-    name: 'Empty'
+    name: 'Empty',
+    components: {CodeIsPoetry}
   }
 </script>
 
@@ -25,10 +26,4 @@
     width: 100%;
   }
 
-  #codePoetry {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    color: #999;
-  }
 </style>

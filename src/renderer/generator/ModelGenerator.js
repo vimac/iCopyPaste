@@ -1,5 +1,6 @@
 import {
   convertSQLTypeToNative,
+  getDataObjectFilename,
   getDataObjectFullName,
   getDataObjectNamespace,
   getDataObjectShortName,
@@ -16,7 +17,8 @@ const getDataModelMeta = {
     return {
       name: getDataObjectShortName.myspot(database, table),
       fullName: getDataObjectFullName(database, table),
-      table
+      table,
+      filename: getDataObjectFilename(database, table)
     }
   }
 }

@@ -3,7 +3,8 @@
     <Collapse accordion simple @on-change="showModel" v-model="activateModel">
       <Panel v-for="item in metaData" :name="item.table" hide-arrow>
         <Icon type="ios-list-box-outline"/>
-        {{item.fullName}} <span class="tableName">{{config.database + '.' + item.table}}</span>
+        {{item.fullName}}
+        <span class="tableName">{{item.filename}}</span>
         <template slot="content">
           <Spin v-if="activateModel[0] === item.table && spinLoading">
             <Icon type="ios-loading" size=80 class="spinLoading"></Icon>
@@ -16,6 +17,7 @@
           />
         </template>
       </Panel>
+      <CodeIsPoetry v-if="modelList.length === 0"/>
     </Collapse>
   </div>
 </template>
@@ -24,10 +26,12 @@
   import {mapState} from 'vuex'
   import CodeHighlight from 'vue-code-highlight/src/CodeHighlight.vue'
   import ModelPanel from './ModelPanel'
+  import CodeIsPoetry from '../Widget/CodeIsPoetry'
 
   export default {
     name: 'ModelList',
     components: {
+      CodeIsPoetry,
       ModelPanel,
       CodeHighlight
     },

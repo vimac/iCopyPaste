@@ -13,13 +13,13 @@
         <Icon type="md-git-merge"/>
         Query
       </MenuItem>
-<!--      <MenuItem name="settings">-->
-<!--        <Icon type="ios-construct"/>-->
-<!--        Settings-->
-<!--      </MenuItem>-->
+      <!--      <MenuItem name="settings">-->
+      <!--        <Icon type="ios-construct"/>-->
+      <!--        Settings-->
+      <!--      </MenuItem>-->
       <Submenu name="information">
         <template slot="title">
-          <Icon type="ios-information-circle" />
+          <Icon type="ios-information-circle"/>
           Information
         </template>
         <MenuGroup title="Host">
@@ -29,7 +29,7 @@
           <MenuItem name="database" disabled>{{config.database}}</MenuItem>
         </MenuGroup>
       </Submenu>
-      <MenuItem name="disconnect">
+      <MenuItem name="disconnect" to="/landing?action=disconnect">
         <Icon type="ios-exit"/>
         Disconnect
       </MenuItem>

@@ -4,6 +4,10 @@ const state = {
     // eslint-disable-next-line no-template-curly-in-string
     root: 'MyProject',
     // eslint-disable-next-line no-template-curly-in-string
+    srcRoot: 'src',
+    // eslint-disable-next-line no-template-curly-in-string
+    configRoot: 'config',
+    // eslint-disable-next-line no-template-curly-in-string
     doSuffix: 'DO',
     // eslint-disable-next-line no-template-curly-in-string
     doNamespace: '${root}\\DataObject\\${database}',

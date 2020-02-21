@@ -33,10 +33,18 @@ const getDataObjectShortName = {
 const getDataObjectFullName = (database, table) => {
   return '\\' + getDataObjectNamespace(database) + '\\' + ucfirst(underscoreToCamelCase(table)) + projectSettings.myspot.doSuffix
 }
+const getDataObjectFilename = (database, table) => {
+  const fullName = getDataObjectFullName(database, table)
+  let filenameParts = fullName.split('\\').filter(value => value !== projectSettings.myspot.rootNS && value !== '')
+  filenameParts.unshift(projectSettings.myspot.srcRoot)
+  return filenameParts.join('/') + '.php'
+}
 
 const projectSettings = {
   myspot: {
     rootNS: 'MyProject',
+    srcRoot: 'src',
+    configRoot: 'config',
     doSuffix: 'DO',
     daoSuffix: 'DAO',
     doNamespaceTemplate: '{{=it.root}}\\DataObject\\{{=it.database}}',
@@ -47,6 +55,8 @@ const projectSettings = {
 
 const loadTemplate = (settings) => {
   projectSettings.myspot.rootNS = settings.myspot.root
+  projectSettings.myspot.srcRoot = settings.myspot.srcRoot
+  projectSettings.myspot.configRoot = settings.myspot.configRoot
   projectSettings.myspot.doSuffix = settings.myspot.doSuffix
   projectSettings.myspot.daoSuffix = settings.myspot.daoSuffix
   projectSettings.myspot.doNamespaceTemplate = settings.myspot.doNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
@@ -73,5 +83,6 @@ export {
   getDataObjectNamespace,
   getDataObjectShortName,
   getDataObjectFullName,
+  getDataObjectFilename,
   generatorInstaller
 }

@@ -98,6 +98,15 @@
       }
     },
     mounted () {
+      if (this.$route.query.action && this.$route.query.action === 'disconnect') {
+        this.$conn.close()
+          .then(
+            this.submitConnectionStatus({connected: 'no', errorMessage: ''})
+          )
+          .catch(err => {
+            this.$Message.error(err.message)
+          })
+      }
       this.doConnect() // auto connect in development env
     },
     data () {

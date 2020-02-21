@@ -20,6 +20,11 @@ export default new Router({
       component: require('../components/Workspace').default,
       children: [
         {
+          path: 'project',
+          name: 'ProjectPage',
+          component: require('../components/MainPage/ProjectPage').default
+        },
+        {
           path: 'model',
           name: 'ModelPage',
           component: require('../components/MainPage/ModelPage').default
