@@ -7,8 +7,10 @@ import store from './store'
 
 import ViewUI from 'view-design'
 import enUS from 'view-design/dist/locale/en-US'
-import SequelizeBridge from './util/SequelizeBridge'
+import {sequelizeBridgeInstaller} from './util/SequelizeBridge'
 import DotBridge from './util/DotBridge'
+import ModelGenerator from './generator/ModelGenerator'
+import {generatorInstaller} from './generator/GeneratorUtil'
 import 'view-design/dist/styles/iview.css'
 import 'vue-code-highlight/themes/prism-tomorrow.css'
 import './assets/main.css'
@@ -20,9 +22,11 @@ Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
 Vue.use(ViewUI, {locale: enUS})
-Vue.use(SequelizeBridge)
+Vue.use(sequelizeBridgeInstaller)
 Vue.use(VueCodeHighlight)
 Vue.use(DotBridge)
+Vue.use(ModelGenerator)
+Vue.use(generatorInstaller)
 
 /* eslint-disable no-new */
 new Vue({

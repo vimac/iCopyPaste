@@ -75,6 +75,7 @@
         }
         this.modalInfoDisplay = false
         this.disableForm = false
+        this.updateModels(newTables.map(item => item.name))
         this.$router.push('/workspace/model')
       },
       config (newConfig, oldConfig) {
@@ -126,7 +127,7 @@
       }
     },
     methods: {
-      ...mapActions(['submitConfig', 'submitConnectionStatus', 'addConnection', 'setConnections']),
+      ...mapActions(['submitConfig', 'submitConnectionStatus', 'addConnection', 'setConnections', 'updateModels']),
       doConnect () {
         this.modalLoading = true
         this.disableForm = true

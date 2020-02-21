@@ -1,6 +1,6 @@
 <template>
-  <Tabs>
-    <TabPane label="Reference" icon="ios-list-box-outline">
+  <Tabs v-model="activateTab" @on-click="tabClick">
+    <TabPane label="Reference" name="ref">
       <List size="small">
         <ListItem v-for="{name, type, nullable, key, comment} in columns" class="columnListItem" :key="name">
           <ListItemMeta>
@@ -16,14 +16,13 @@
         </ListItem>
       </List>
     </TabPane>
-    <TabPane label="Raw" icon="ios-code">
+    <TabPane label="Raw Definition" name="raw">
       <CodeHighlight language="sql">{{ddl}}</CodeHighlight>
     </TabPane>
   </Tabs>
 </template>
 
 <script>
-  import {mapState} from 'vuex'
   import CodeHighlight from 'vue-code-highlight/src/CodeHighlight.vue'
   import 'prism-es6/components/prism-sql'
 
@@ -37,8 +36,24 @@
       table: String,
       columns: Array
     },
-    computed: {
-      ...mapState({ddl: state => state.column.ddl})
+    data () {
+      return {
+        activateTab: 'ref',
+        ddl: ''
+      }
+    },
+    methods: {
+      tabClick () {
+        if (this.activateTab === 'raw' && !this.ddl) {
+          this.$conn.fetchTableDDL(this.database, this.table)
+            .then(ddl => {
+              this.ddl = ddl
+            })
+            .catch(err => {
+              this.$Message.error(err.message)
+            })
+        }
+      }
     }
   }
 </script>

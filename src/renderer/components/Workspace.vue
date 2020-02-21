@@ -13,20 +13,20 @@
         <Icon type="md-git-merge"/>
         Query
       </MenuItem>
-      <MenuItem name="settings">
-        <Icon type="ios-construct"/>
-        Settings
-      </MenuItem>
-      <Submenu name="settings">
+<!--      <MenuItem name="settings">-->
+<!--        <Icon type="ios-construct"/>-->
+<!--        Settings-->
+<!--      </MenuItem>-->
+      <Submenu name="information">
         <template slot="title">
           <Icon type="ios-information-circle" />
           Information
         </template>
         <MenuGroup title="Host">
-          <MenuItem name="hostAndPort">{{config.host + ':' + config.port}}</MenuItem>
+          <MenuItem name="hostAndPort" disabled>{{config.host + ':' + config.port}}</MenuItem>
         </MenuGroup>
         <MenuGroup title="Database">
-          <MenuItem name="database">{{config.database}}</MenuItem>
+          <MenuItem name="database" disabled>{{config.database}}</MenuItem>
         </MenuGroup>
       </Submenu>
       <MenuItem name="disconnect">
@@ -69,8 +69,6 @@
       }
     },
     mounted () {
-      console.log(this.$route.params)
-      console.log(this.$route)
     }
   }
 </script>

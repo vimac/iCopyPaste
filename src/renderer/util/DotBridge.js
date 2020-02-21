@@ -4,14 +4,10 @@ import path from 'path'
 import doT from 'dot'
 
 import store from '../store'
-
-const underscoreToCamelCase = str => str.replace(/_([a-z])/g, x => x[1].toUpperCase())
-const ucfirst = str => str.replace(/^./, x => x[0].toUpperCase())
+import {getDataObjectFullName, ucfirst, underscoreToCamelCase} from '../generator/GeneratorUtil'
 
 let rootNS = 'MyProject'
-let doSuffix = 'DO'
 let daoSuffix = 'DAO'
-let doNamespaceTemplate = '{{=it.root}}\\DataObject\\{{=it.database}}'
 let daoNamespaceTemplate = '{{=it.root}}\\DAO\\{{=it.database}}'
 let baseDaoNamespaceTemplate = '{{=it.root}}\\DAO'
 
@@ -45,23 +41,6 @@ const getExampleConfigFilename = (database, table, suffix = '.php') => {
 
 const getOptionalName = (prefix, variableName) => {
   return prefix + ucfirst(underscoreToCamelCase(variableName))
-}
-
-const getDataObjectShortName = (database, table) => {
-  return ucfirst(underscoreToCamelCase(table)) + doSuffix
-}
-
-const getDataObjectNamespace = (database) => {
-  const vars = {
-    root: rootNS,
-    database: ucfirst(underscoreToCamelCase(database))
-  }
-  const render = doT.template(doNamespaceTemplate)
-  return render(vars)
-}
-
-const getDataObjectFullName = (database, table) => {
-  return '\\' + getDataObjectNamespace(database) + '\\' + ucfirst(underscoreToCamelCase(table)) + doSuffix
 }
 
 const getDAONamespace = (database) => {
@@ -348,9 +327,7 @@ const getReturnTemplate = (queryType, returnType, limitType, fullDataObjectName 
 
 const loadTemplate = (myspot) => {
   rootNS = myspot.root
-  doSuffix = myspot.doSuffix
   daoSuffix = myspot.daoSuffix
-  doNamespaceTemplate = myspot.doNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
   daoNamespaceTemplate = myspot.daoNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
   baseDaoNamespaceTemplate = myspot.baseDaoNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
 }
@@ -549,30 +526,6 @@ export default {
     }
 
     dotBridge = {
-      generatePHPDataObject (database, tableName, fetchedColumns) {
-        let template = fs.readFileSync(path.join(__static, '/template/PHPDataObject.dot'), 'utf8')
-        const render = doT.template(template)
-        let columns = []
-        fetchedColumns.forEach(item => {
-          const newName = underscoreToCamelCase(item.name)
-          columns.push({
-            name: newName,
-            comment: item.comment,
-            type: convertSQLTypeToNative(item.type),
-            getterName: 'get' + ucfirst(newName),
-            setterName: 'set' + ucfirst(newName),
-            originalName: item.name
-          })
-        })
-        const vars = {
-          className: getDataObjectShortName(database, tableName),
-          columns: columns,
-          database: ucfirst(underscoreToCamelCase(database)),
-          doNamespace: getDataObjectNamespace(database)
-        }
-        const code = render(vars)
-        store.dispatch('generateDataObjectCode', code)
-      },
       generateMySpotSQL (queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
         const code = queryGenerations[queryType](...arguments)
         const sqlTemplate = code.replace(/\r?\n+/g, `\n`)
