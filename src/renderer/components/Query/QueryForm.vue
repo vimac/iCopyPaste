@@ -2,7 +2,7 @@
   <div>
     <Form :label-width="90">
       <FormItem label="Type">
-        <RadioGroup v-model="type" size="small" type="button">
+        <RadioGroup v-model="queryType" size="small" type="button">
           <Radio label="select">SELECT</Radio>
           <Radio label="selectCount">SELECT COUNT</Radio>
           <Radio label="insert">INSERT</Radio>
@@ -10,31 +10,36 @@
           <Radio label="delete">DELETE</Radio>
         </RadioGroup>
       </FormItem>
-      <FormItem label="Field">
-        <CheckboxGroup v-model="field" size="small">
-          <Checkbox v-for="{name} in columns" :key="name" :label="name" :disabled="disableField">{{name}}</Checkbox>
-        </CheckboxGroup>
-      </FormItem>
-      <FormItem label="Where">
-        <CheckboxGroup v-model="whereFields" size="small">
-          <Checkbox v-for="{name} in columns" :key="name" :label="name" :disabled="disableWhere">{{name}}
-          </Checkbox>
-        </CheckboxGroup>
-      </FormItem>
-      <FormItem v-if="whereFields.length > 0">
-        <Table :show-header='false' :data="where" :columns="whereTable" size="small"/>
-      </FormItem>
-      <FormItem label="Order">
-        <CheckboxGroup v-model="orderFields" size="small">
-          <Checkbox v-for="{name} in columns" :key="name" :label="name" :disabled="disableOrder">{{name}}
-          </Checkbox>
-        </CheckboxGroup>
-      </FormItem>
-      <FormItem v-if="orderFields.length > 0">
-        <Table :show-header='false' :data="order" :columns="orderTable" size="small"/>
-      </FormItem>
+      <div v-if="columns.length">
+        <FormItem label="Field">
+          <CheckboxGroup v-model="fields" size="small">
+            <Checkbox v-for="{name} in columns" :key="name" :label="name" :disabled="disableField">{{name}}</Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+        <FormItem label="Where">
+          <CheckboxGroup v-model="whereFields" size="small">
+            <Checkbox v-for="{name} in columns" :key="name" :label="name" :disabled="disableWhere">{{name}}
+            </Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+        <FormItem v-if="whereFields.length > 0">
+          <Table :show-header='false' :data="where" :columns="whereTable" size="small"/>
+        </FormItem>
+        <FormItem label="Order">
+          <CheckboxGroup v-model="orderFields" size="small">
+            <Checkbox v-for="{name} in columns" :key="name" :label="name" :disabled="disableOrder">{{name}}
+            </Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+        <FormItem v-if="orderFields.length > 0">
+          <Table :show-header='false' :data="order" :columns="orderTable" size="small"/>
+        </FormItem>
+      </div>
+      <div v-else>
+        loading
+      </div>
       <FormItem label="Limit">
-        <RadioGroup size="small" v-model="limit">
+        <RadioGroup size="small" v-model="limitType">
           <Radio label="no" :disabled="disableLimit">NO LIMIT</Radio>
           <Radio label="limitOne" :disabled="disableLimit">LIMIT 1</Radio>
           <Radio label="limitRows" :disabled="disableLimit">LIMIT ?</Radio>
@@ -67,35 +72,48 @@
             <Button @click="onCopyExpanded" size="small" icon="ios-copy-outline">Expanded</Button>
             <Button @click="onCopySingleLine" size="small" icon="ios-copy-outline">Single line</Button>
           </ButtonGroup>
-          <CodeHighlight language="sql">
-            {{mixedSql}}
-          </CodeHighlight>
+          <CodeFileContent language="sql"
+                           fileType="sql"
+                           :database="config.database"
+                           :table="table"
+                           :params="{queryType, columns, fields, where, order, limitType}"
+                           @on-loaded="onSqlTemplateLoaded"
+          />
         </TabPane>
         <TabPane label="Config" class="codeTab">
           <ButtonGroup class="copyCode">
             <Button @click="onCopyConfig" size="small" icon="ios-copy-outline">Whole file</Button>
             <Button @click="onCopyConfigItem" size="small" icon="ios-copy-outline">Single item</Button>
           </ButtonGroup>
-          <CodeHighlight language="php">
-            {{configTemplate}}
-          </CodeHighlight>
+          <CodeFileContent language="php"
+                           fileType="myspotConfiguration"
+                           :database="config.database"
+                           :table="table"
+                           :params="{queryType, columns, fields, where, returnType, sqlTemplateInline}"
+                           @on-loaded="onMySpotConfigurationLoaded"
+          />
         </TabPane>
         <TabPane label="DAO" class="codeTab">
           <ButtonGroup class="copyCode">
             <Button @click="onCopyDAO" size="small" icon="ios-copy-outline">Class</Button>
             <Button @click="onCopyDAOMethod" size="small" icon="ios-copy-outline">Method</Button>
           </ButtonGroup>
-          <CodeHighlight language="php">
-            {{daoCode}}
-          </CodeHighlight>
+          <CodeFileContent language="php"
+                           fileType="myspotDAO"
+                           :database="config.database"
+                           :table="table"
+                           :params="{queryName, queryType, columns, fields, where, order, limitType, argsType, returnType}"
+          />
+
         </TabPane>
         <TabPane label="BaseDAO" class="codeTab">
           <ButtonGroup class="copyCode">
             <Button @click="onCopyBaseDAO" size="small" icon="ios-copy-outline">BaseDAO</Button>
           </ButtonGroup>
-          <CodeHighlight language="php">
-            {{baseDAOCode}}
-          </CodeHighlight>
+          <CodeFileContent language="php"
+                           fileType="myspotBaseDAO"
+                           :params="{}"
+          />
         </TabPane>
       </Tabs>
     </div>
@@ -108,29 +126,26 @@
   import 'prism-es6/components/prism-sql'
   import 'prism-es6/components/prism-markup-templating'
   import 'prism-es6/components/prism-php'
+  import CodeFileContent from '../Widget/CodeFileContent'
 
   export default {
     name: 'QueryForm',
     components: {
+      CodeFileContent,
       CodeHighlight
-    },
-    props: {
-      database: String,
-      table: String,
-      columns: Array
     },
     computed: {
       ...mapState({
-        sqlTemplate: state => state.code.sqlTemplate,
-        sqlTemplateInline: state => state.code.sqlTemplateInline,
-        mixedSql: state => state.code.mixedSql,
         configTemplate: state => state.code.configTemplate,
         configTemplateItem: state => state.code.configTemplateItem,
-        queryName: state => state.code.queryName,
         daoCode: state => state.code.daoCode,
         daoMethodCode: state => state.code.daoMethodCode,
-        baseDAOCode: state => state.code.baseDAOCode
+        baseDAOCode: state => state.code.baseDAOCode,
+        config: state => state.db.config
       }),
+      table () {
+        return this.$route.params.table
+      },
       whereFields: {
         get () {
           return this.where.map(item => item.name)
@@ -176,7 +191,7 @@
     },
     methods: {
       generateSQL () {
-        this.$dot.generateMySpotSQL(this.type, this.database, this.table, this.columns, this.field, this.where, this.order, this.limit, this.argsType, this.returnType)
+        // this.$dot.generateMySpotSQL(this.queryType, this.database, this.table, this.columns, this.fields, this.where, this.order, this.limitType, this.argsType, this.returnType)
       },
       onCopyExpanded () {
         require('electron').clipboard.writeText(this.sqlTemplate)
@@ -205,10 +220,31 @@
       onCopyBaseDAO () {
         require('electron').clipboard.writeText(this.baseDAOCode)
         this.$Message.info('BaseDAO code copied to clipboard')
+      },
+      loadColumns () {
+        return new Promise((resolve, reject) => {
+          this.$conn.fetchColumns(this.config.database, this.table)
+            .then((fetchedColumns) => {
+              this.columns = fetchedColumns
+              resolve()
+            })
+            .catch(err => {
+              this.$Message.error(err.message)
+            })
+        })
+      },
+      onSqlTemplateLoaded (code, payload) {
+        const {sqlTemplate, sqlTemplateInline} = payload
+        this.sqlTemplate = sqlTemplate
+        this.sqlTemplateInline = sqlTemplateInline
+      },
+      onMySpotConfigurationLoaded (code, payload) {
+        const {queryName} = payload
+        this.queryName = queryName
       }
     },
     mounted () {
-      this.generateSQL()
+      this.loadColumns().then(() => this.generateSQL())
     },
     watch: {
       type (newType, oldType) {
@@ -226,13 +262,13 @@
           this.disableDataObjectType = false
           this.where = []
           this.order = []
-          this.limit = 'no'
+          this.limitType = 'no'
           this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'lastInsertId'
           this.disableReturnType = ['do', 'array', 'stdClass', 'onlyValue']
         } else if (newType === 'delete') {
           this.disableField = true
-          this.field = []
-          this.limit = 'limitOne'
+          this.fields = []
+          this.limitType = 'limitOne'
           this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'lines'
           this.disableReturnType = ['do', 'array', 'stdClass', 'lastInsertId', 'onlyValue']
         } else if (newType === 'update') {
@@ -242,7 +278,7 @@
           this.disableOrder = true
           this.disableLimit = true
           this.order = []
-          this.limit = 'no'
+          this.limitType = 'no'
           this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'onlyValue'
           this.disableReturnType = ['do', 'stdClass', 'lines', 'lastInsertId']
         } else if (newType === 'select') {
@@ -252,11 +288,14 @@
         this.generateSQL()
       },
       $route (to, from) {
-        this.type = 'select'
-        this.field = []
+        this.queryType = 'select'
+        this.fields = []
         this.where = []
         this.order = []
-        this.limit = 'no'
+        this.limitType = 'no'
+      },
+      table (to, from) {
+        this.loadColumns().then(() => this.generateSQL())
       },
       ...(() => {
         let x = {
@@ -265,15 +304,19 @@
           },
           deep: true
         }
-        return {where: x, order: x, field: x, limit: x, argsType: x, returnType: x}
+        return {where: x, order: x, fields: x, limitType: x, argsType: x, returnType: x}
       })()
     },
     data () {
       return {
-        type: 'select',
+        sqlTemplate: '',
+        sqlTemplateInline: '',
+        queryName: '',
+        queryType: 'select',
         argsType: 'plain',
         returnType: 'do',
-        field: [],
+        columns: [],
+        fields: [],
         selectedField: [],
         where: [],
         whereTable: [
@@ -432,7 +475,7 @@
             }
           }
         ],
-        limit: 'no',
+        limitType: 'no',
         disableField: false,
         disableWhere: false,
         disableOrder: false,

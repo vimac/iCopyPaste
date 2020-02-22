@@ -48,13 +48,13 @@ export default new Router({
           children: [
             {
               path: '',
-              name: 'Empty',
-              component: require('../components/Dashboard/Empty').default
+              name: 'AddedQueries',
+              component: require('../components/Query/AddedQueries').default
             },
             {
               path: ':table',
-              name: 'WorkingPanel',
-              component: require('../components/Dashboard/WorkingPanel').default
+              name: 'QueryForm',
+              component: require('../components/Query/QueryForm').default
             }
           ]
         }

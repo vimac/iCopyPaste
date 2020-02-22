@@ -76,7 +76,7 @@
         this.modalInfoDisplay = false
         this.disableForm = false
         this.updateModels(newTables.map(item => item.name))
-        this.$router.push('/workspace/project/files')
+        this.$router.push('/workspace/query')
       },
       config (newConfig, oldConfig) {
         if (newConfig.connected === 'error') {

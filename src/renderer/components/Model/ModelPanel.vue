@@ -9,7 +9,7 @@
         Data Object Code
       </h1>
     </div>
-    <CodeFileContent :database="this.database" :table="this.table" language="php" fileType="dataModel" @on-async-loaded="onCodeLoaded" />
+    <CodeFileContent :database="this.database" :table="this.table" language="php" fileType="dataModel" @on-loaded="onCodeLoaded" />
   </div>
 </template>
 

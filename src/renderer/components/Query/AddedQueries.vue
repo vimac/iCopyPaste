@@ -9,7 +9,7 @@
   import CodeIsPoetry from '../Widget/CodeIsPoetry'
 
   export default {
-    name: 'Empty',
+    name: 'AddedQueries',
     components: {CodeIsPoetry}
   }
 </script>
@@ -17,7 +17,6 @@
 <style scoped>
   div {
     font-size: 14px;
-    text-shadow: 1px 1px 1px #ccc;
     cursor: default;
   }
 

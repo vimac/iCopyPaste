@@ -10,6 +10,12 @@
 <script>
   import CodeHighlight from 'vue-code-highlight/src/CodeHighlight.vue'
   import 'prism-es6/components/prism-sql'
+  import {
+    generateBaseDAOTemplate,
+    generateDAOCode,
+    generateMySpotConfig,
+    generateMySpotSQL
+  } from '../../generator/MySpotGenerator'
 
   export default {
     name: 'CodeFileContent',
@@ -18,7 +24,13 @@
       database: String,
       table: String,
       language: String,
-      fileType: String
+      fileType: String,
+      params: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }
     },
     data () {
       return {
@@ -29,6 +41,12 @@
     watch: {
       table (newTable, old) {
         this.refreshCode()
+      },
+      params: {
+        handler (newParams, old) {
+          this.refreshCode()
+        },
+        deep: true
       }
     },
     mounted () {
@@ -36,30 +54,65 @@
     },
     methods: {
       refreshCode () {
-        this.spinLoading = true
         const errHandler = (err) => {
           this.spinLoading = false
           this.$Message.error(err.message)
         }
         switch (this.fileType) {
+          case 'ddl':
+            this.spinLoading = true
+            this.$conn.fetchTableDDL(this.database, this.table)
+              .then(code => {
+                this.spinLoading = false
+                this.code = code
+                this.$emit('on-loaded', code, {})
+              })
+              .catch(errHandler)
+            break
           case 'dataModel':
+            this.spinLoading = true
             this.$conn.fetchColumns(this.database, this.table)
               .then((fetchedColumns) => {
                 const code = this.$modelGenerator.getDataModelByTable('myspot', this.database, this.table, fetchedColumns)
                 this.spinLoading = false
                 this.code = code
-                this.$emit('on-async-loaded', code, {fetchedColumns})
+                this.$emit('on-loaded', code, {fetchedColumns})
               })
               .catch(errHandler)
             break
-          case 'ddl':
-            this.$conn.fetchTableDDL(this.database, this.table)
-              .then(code => {
-                this.spinLoading = false
-                this.code = code
-                this.$emit('on-async-loaded', code, {})
-              })
-              .catch(errHandler)
+          case 'sql': {
+            const {queryType, columns, fields, where, order, limitType} = this.params
+            if (columns.length > 0) {
+              const {sqlTemplate, sqlTemplateInline, mixedSql} = generateMySpotSQL(this.database, this.table, queryType, columns, fields, where, order, limitType)
+              this.code = mixedSql
+              this.$emit('on-loaded', mixedSql, {sqlTemplate, sqlTemplateInline})
+            }
+            break
+          }
+          case 'myspotConfiguration': {
+            const {queryType, columns, fields, where, returnType, sqlTemplateInline} = this.params
+            if (columns.length > 0) {
+              const {configTemplate, configTemplateItem, queryName, configTemplateName, filename} = generateMySpotConfig(this.database, this.table, queryType, fields, where, returnType, sqlTemplateInline)
+              this.code = configTemplate
+              this.$emit('on-loaded', configTemplate, {configTemplateItem, queryName, configTemplateName, filename})
+            }
+            break
+          }
+          case 'myspotDAO': {
+            const {queryName, queryType, columns, fields, where, order, limitType, argsType, returnType} = this.params
+            console.log(this.params)
+            if (columns.length > 0) {
+              const {code, daoMethodCode} = generateDAOCode(queryName, queryType, this.database, this.table, columns, fields, where, order, limitType, argsType, returnType)
+              this.code = code
+              this.$emit('on-loaded', code, {daoMethodCode})
+            }
+            break
+          }
+          case 'myspotBaseDAO': {
+            const code = generateBaseDAOTemplate()
+            this.code = code
+            this.$emit('on-loaded', code, {})
+          }
         }
       }
     }

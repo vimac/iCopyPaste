@@ -3,7 +3,8 @@
     <Button class="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
     <Sider ref="sidebar" width="150" id="sidebar" v-model="sidebarCollapsed" collapsible :collapsed-width="78"
            hide-trigger>
-      <Menu width="auto" theme="dark" :active-name="activateMenu" :class="menuitemClasses">
+      <Menu ref="menu" width="auto" theme="dark" :active-name="activateMenu" :class="menuitemClasses"
+            @on-select="onMenuSelect">
         <MenuItem name="files" to="/workspace/project/files">
           <Icon type="ios-briefcase"/>
           <span>Files</span>
@@ -42,12 +43,32 @@
     data () {
       return {
         activateMenu: 'files',
-        sidebarCollapsed: false
+        sidebarCollapsed: false,
+        buttonLocation: '/workspace/project/files'
+      }
+    },
+    watch: {
+      $route (newRoute, old) {
+        this.buttonLocation = newRoute.fullPath
       }
     },
     methods: {
       sidebarCollapseSwitch () {
         this.$refs.sidebar.toggleCollapse()
+      },
+      onMenuSelect (name) {
+        const {dialog} = require('electron').remote
+        if (name === 'saveProject') {
+          dialog.showSaveDialog({
+            filters: [
+              {name: 'iCopyPaste Project', extensions: ['icpproj']},
+              {name: 'All Files', extensions: ['*']}
+            ]
+          })
+        } else if (name === 'exportGenerated') {
+          // do nothing
+        }
+        return name
       }
     }
   }

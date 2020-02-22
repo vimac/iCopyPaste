@@ -1,8 +1,18 @@
 <template>
   <Layout id="container">
     <Button class="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
-    <Sider width="250" id="sidebar" ref="sidebar" collapsible hide-trigger v-model="sidebarCollapsed" :collapsed-width="0">
-      <Card class="sideCard" title="Tables" :padding="0" icon="ios-list-box-outline" shadow>
+    <Sider width="250" id="sidebar" ref="sidebar" collapsible hide-trigger v-model="sidebarCollapsed"
+           :collapsed-width="0">
+      <Card class="sideCard" title="Query" :padding="0" icon="ios-list-box-outline" shadow>
+        <CellGroup>
+          <Cell
+                  title="Generated Queries"
+                  :selected="$route.fullPath === '/workspace/query'"
+                  to="/workspace/query"
+          >
+            <span slot="arrow" />
+          </Cell>
+        </CellGroup>
         <div class="filterPanel">
           <Input placeholder="filter" size="small" icon="ios-search" v-model="tableFilter"/>
         </div>
@@ -12,9 +22,12 @@
                 :name="name"
                 :title="name"
                 :label="comment || ''"
-                :selected="selectedTable === name"
+                :selected="$route.params.table === name"
                 :key="name"
-                :to="{path: '/query/' + name}"/>
+                :to="'/workspace/query/' + name"
+          >
+            <span slot="arrow" />
+          </Cell>
         </CellGroup>
       </Card>
     </Sider>
@@ -32,8 +45,7 @@
     computed: {
       ...mapState({
         config: state => state.db.config,
-        tables: state => state.table.tables,
-        selectedTable: state => state.table.selected
+        tables: state => state.table.tables
       })
     },
     data () {
@@ -49,27 +61,12 @@
       }
       const {database} = this.config
       this.$conn.fetchTables(database) */
-    },
-    watch: {
-      config (newConfig, oldConfig) {
-        if (newConfig.connected !== 'succeed') {
-          this.$router.push('/landing')
-        }
-      }
+      console.log(this.$route.fullPath)
     },
     methods: {
       ...mapActions(['submitConnectionStatus']),
       sidebarCollapseSwitch () {
         this.$refs.sidebar.toggleCollapse()
-      },
-      showSettings () {
-        this.enableSettings = true
-      },
-      changeServer () {
-        this.$conn.close().then(() => {
-          this.submitConnectionStatus({connected: 'no'})
-          this.$router.push('/')
-        })
       }
     }
   }

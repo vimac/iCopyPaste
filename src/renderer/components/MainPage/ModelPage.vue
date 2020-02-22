@@ -3,7 +3,7 @@
     <Button class="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
     <Sider width="250" id="sidebar" ref="sidebar" collapsible hide-trigger v-model="sidebarCollapsed"
            :collapsed-width="0">
-      <Card class="sideCard" title="Tables" :padding="0" icon="ios-list-box-outline" shadow>
+      <Card class="sideCard" title="Models" :padding="0" icon="ios-list-box-outline" shadow>
         <CellGroup>
           <Cell name="all">
             All
