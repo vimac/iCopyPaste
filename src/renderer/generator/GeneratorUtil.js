@@ -1,10 +1,10 @@
 import store from '../store'
 import doT from 'dot'
 
-const underscoreToCamelCase = str => str.replace(/_([a-z])/g, x => x[1].toUpperCase())
-const ucfirst = str => str.replace(/^./, x => x[0].toUpperCase())
+export const underscoreToCamelCase = str => str.replace(/_([a-z])/g, x => x[1].toUpperCase())
+export const ucfirst = str => str.replace(/^./, x => x[0].toUpperCase())
 
-const convertSQLTypeToNative = (sqlType) => {
+export const convertSQLTypeToNative = (sqlType) => {
   if (/(?:BOOL)/i.test(sqlType)) {
     return 'bool'
   } else if (/(?:INT)/i.test(sqlType)) {
@@ -16,7 +16,7 @@ const convertSQLTypeToNative = (sqlType) => {
   }
 }
 
-const getDataObjectNamespace = (database) => {
+export const getDataObjectNamespace = (database) => {
   const vars = {
     root: projectSettings.myspot.rootNS,
     database: ucfirst(underscoreToCamelCase(database))
@@ -25,15 +25,15 @@ const getDataObjectNamespace = (database) => {
   return render(vars)
 }
 
-const getDataObjectShortName = {
+export const getDataObjectShortName = {
   myspot: (database, table) => {
     return ucfirst(underscoreToCamelCase(table)) + projectSettings.myspot.doSuffix
   }
 }
-const getDataObjectFullName = (database, table) => {
+export const getDataObjectFullName = (database, table) => {
   return '\\' + getDataObjectNamespace(database) + '\\' + ucfirst(underscoreToCamelCase(table)) + projectSettings.myspot.doSuffix
 }
-const getDataObjectFilename = (database, table) => {
+export const getDataObjectFilename = (database, table) => {
   const fullName = getDataObjectFullName(database, table)
   let filenameParts = fullName.split('\\').filter(value => value !== projectSettings.myspot.rootNS && value !== '')
   filenameParts.unshift(projectSettings.myspot.srcRoot)
@@ -64,25 +64,13 @@ const loadTemplate = (settings) => {
   projectSettings.myspot.baseDaoNamespaceTemplate = settings.myspot.baseDaoNamespace.replace(/\${(\w+?)}/g, '{{=it.$1}}')
 }
 
-const generatorInstaller = {
+export const generatorInstaller = {
   install (Vue, options) {
     store.subscribe((mutation, state) => {
       if (mutation.type === 'SUBMIT_SETTINGS') {
-        const {myspot} = state.settings
-        loadTemplate(myspot)
+        loadTemplate(state.settings)
       }
     })
     loadTemplate(store.state.settings)
   }
-}
-
-export {
-  underscoreToCamelCase,
-  ucfirst,
-  convertSQLTypeToNative,
-  getDataObjectNamespace,
-  getDataObjectShortName,
-  getDataObjectFullName,
-  getDataObjectFilename,
-  generatorInstaller
 }

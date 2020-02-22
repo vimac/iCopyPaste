@@ -1,7 +1,7 @@
 <template>
   <div id="frame">
     <div id="hint">Select a table from the menu to start</div>
-    <CodeIsPoetry/>
+    <CodeIsPoetry :display="true"/>
   </div>
 </template>
 

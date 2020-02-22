@@ -22,7 +22,19 @@ export default new Router({
         {
           path: 'project',
           name: 'ProjectPage',
-          component: require('../components/MainPage/ProjectPage').default
+          component: require('../components/MainPage/ProjectPage').default,
+          children: [
+            {
+              path: 'files',
+              name: 'ProjectFiles',
+              component: require('../components/Project/ProjectFiles').default
+            },
+            {
+              path: 'settings',
+              name: 'ProjectSettings',
+              component: require('../components/Project/ProjectSettings').default
+            }
+          ]
         },
         {
           path: 'model',
@@ -31,6 +43,7 @@ export default new Router({
         },
         {
           path: 'query',
+          name: 'QueryPage',
           component: require('../components/MainPage/QueryPage').default,
           children: [
             {

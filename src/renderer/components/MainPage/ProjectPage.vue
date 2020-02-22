@@ -1,13 +1,77 @@
 <template>
-
+  <Layout id="projectPage">
+    <Button class="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
+    <Sider ref="sidebar" width="150" id="sidebar" v-model="sidebarCollapsed" collapsible :collapsed-width="78"
+           hide-trigger>
+      <Menu width="auto" theme="dark" :active-name="activateMenu" :class="menuitemClasses">
+        <MenuItem name="files" to="/workspace/project/files">
+          <Icon type="ios-briefcase"/>
+          <span>Files</span>
+        </MenuItem>
+        <MenuItem name="settings" to="/workspace/project/settings">
+          <Icon type="ios-construct"/>
+          <span>Settings</span>
+        </MenuItem>
+      </Menu>
+    </Sider>
+    <Content>
+      <router-view/>
+    </Content>
+  </Layout>
 </template>
 
 <script>
   export default {
-    name: 'ProjectPage'
+    name: 'ProjectPage',
+    computed: {
+      menuitemClasses () {
+        return [
+          'menuItem',
+          this.sidebarCollapsed ? 'collapsedMenu' : ''
+        ]
+      }
+    },
+    data () {
+      return {
+        activateMenu: 'files',
+        sidebarCollapsed: false
+      }
+    },
+    methods: {
+      sidebarCollapseSwitch () {
+        this.$refs.sidebar.toggleCollapse()
+      }
+    }
   }
 </script>
 
 <style scoped>
+  .menuItem span {
+    display: inline-block;
+    overflow: hidden;
+    width: 69px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+    transition: width .2s ease .2s;
+  }
 
+  .menuItem i {
+    transform: translateX(0px);
+    transition: font-size .2s ease, transform .2s ease;
+    vertical-align: middle;
+    font-size: 16px;
+  }
+
+  .collapsedMenu span {
+    width: 0;
+    transition: width .2s ease;
+  }
+
+  .collapsedMenu i {
+    transform: translateX(5px);
+    transition: font-size .2s ease .2s, transform .2s ease .2s;
+    vertical-align: middle;
+    font-size: 22px;
+  }
 </style>

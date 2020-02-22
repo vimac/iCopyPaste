@@ -17,7 +17,7 @@
           />
         </template>
       </Panel>
-      <CodeIsPoetry v-if="modelList.length === 0"/>
+      <CodeIsPoetry :display="modelList.length === 0"/>
     </Collapse>
   </div>
 </template>

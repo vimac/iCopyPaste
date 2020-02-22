@@ -1,38 +1,39 @@
 <template>
   <Layout id="mainWrapper">
     <Menu theme="dark" mode="horizontal" :active-name="activatedMenu" id="navMenu">
-      <MenuItem name="project" to="project">
-        <Icon type="ios-briefcase"/>
+      <div id="menuRightSide">
+        <MenuItem name="/disconnect" to="/landing?action=disconnect">
+          <Icon type="ios-exit"/>
+          Disconnect
+        </MenuItem>
+      </div>
+      <!--      <Submenu name="save">-->
+      <!--        <template slot="title">-->
+      <!--          <Icon type="md-archive"/>-->
+      <!--          Save & Export-->
+      <!--        </template>-->
+      <!--        <MenuItem name="saveProject">Save Project</MenuItem>-->
+      <!--        <MenuItem name="exportGenerated">Export Generated Files</MenuItem>-->
+      <!--      </Submenu>-->
+      <MenuItem name="project" to="/workspace/project/files">
+        <Icon type="ios-apps"/>
         Project
       </MenuItem>
-      <MenuItem name="model" to="model">
+      <MenuItem name="model" to="/workspace/model">
         <Icon type="ios-cube"/>
         Model
       </MenuItem>
-      <MenuItem name="query" to="query">
+      <MenuItem name="query" to="/workspace/query">
         <Icon type="md-git-merge"/>
         Query
       </MenuItem>
-      <!--      <MenuItem name="settings">-->
-      <!--        <Icon type="ios-construct"/>-->
-      <!--        Settings-->
-      <!--      </MenuItem>-->
-      <Submenu name="information">
-        <template slot="title">
-          <Icon type="ios-information-circle"/>
-          Information
-        </template>
-        <MenuGroup title="Host">
-          <MenuItem name="hostAndPort" disabled>{{config.host + ':' + config.port}}</MenuItem>
-        </MenuGroup>
-        <MenuGroup title="Database">
-          <MenuItem name="database" disabled>{{config.database}}</MenuItem>
-        </MenuGroup>
-      </Submenu>
-      <MenuItem name="disconnect" to="/landing?action=disconnect">
-        <Icon type="ios-exit"/>
-        Disconnect
-      </MenuItem>
+      <div id="informationPanel">
+        <span :class="informationPanelClassname">
+          IN PROJECT:
+          <Icon type="ios-cube"/> {{modelList.length}}
+          <Icon type="ios-git-merge"/> {{modelList.length}}
+        </span>
+      </div>
     </Menu>
     <Content id="contentWrapper">
       <router-view></router-view>
@@ -47,7 +48,8 @@
     name: 'Workspace',
     computed: {
       ...mapState({
-        config: state => state.db.config
+        config: state => state.db.config,
+        modelList: state => state.model.modelList
       })
     },
     watch: {
@@ -56,6 +58,9 @@
         if (r instanceof Array && r.length === 2) {
           this.activatedMenu = r.pop()
         }
+      },
+      modelList (newModelList, oldModelList) {
+        this.sendNotification()
       }
     },
     beforeMount () {
@@ -65,10 +70,26 @@
     },
     data () {
       return {
-        activatedMenu: 'model'
+        activatedMenu: 'project',
+        informationPanelClassname: ''
       }
     },
     mounted () {
+    },
+    methods: {
+      sendNotification () {
+        this.$Notice.destroy()
+        this.$Notice.success(
+          {
+            title: `Generated: ${this.modelList.length} model(s)`,
+            duration: 2,
+            onClose: () => {
+              this.informationPanelClassname = ''
+            }
+          }
+        )
+        this.informationPanelClassname = 'highlight'
+      }
     }
   }
 </script>

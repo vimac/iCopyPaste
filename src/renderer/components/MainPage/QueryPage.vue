@@ -21,20 +21,14 @@
     <Layout id="workingArea">
       <router-view/>
     </Layout>
-    <Modal v-model="enableSettings" class-name="vertical-center-modal" id="settingsDialog">
-      <SettingsDialog/>
-      <span slot="footer"/>
-    </Modal>
   </Layout>
 </template>
 
 <script>
   import {mapActions, mapState} from 'vuex'
-  import SettingsDialog from '../Settings/SettingsDialog'
 
   export default {
     name: 'QueryPage',
-    components: {SettingsDialog},
     computed: {
       ...mapState({
         config: state => state.db.config,

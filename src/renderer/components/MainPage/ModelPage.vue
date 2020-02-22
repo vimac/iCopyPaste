@@ -90,8 +90,4 @@
 
 <style scoped>
 
-  .checkTable {
-    display: block;
-  }
-
 </style>

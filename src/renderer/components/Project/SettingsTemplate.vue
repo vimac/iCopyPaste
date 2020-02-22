@@ -35,9 +35,10 @@
 
 <script>
   import {mapActions, mapState} from 'vuex'
+  import {mySpotDefaults} from '../../constants/defaults'
 
   export default {
-    name: 'TemplateTab',
+    name: 'SettingsTemplate',
     computed: {
       ...mapState({settings: state => state.settings})
     },
@@ -49,35 +50,14 @@
     methods: {
       ...mapActions(['submitSettings']),
       resetAll () {
-        this.submitSettings({
-          // eslint-disable-next-line no-template-curly-in-string
-          root: 'MyProject',
-          // eslint-disable-next-line no-template-curly-in-string
-          doSuffix: 'DO',
-          // eslint-disable-next-line no-template-curly-in-string
-          doNamespace: '${root}\\DataObject\\${database}',
-          // eslint-disable-next-line no-template-curly-in-string
-          daoSuffix: 'DAO',
-          // eslint-disable-next-line no-template-curly-in-string
-          daoNamespace: '${root}\\DAO\\${database}',
-          // eslint-disable-next-line no-template-curly-in-string
-          baseDaoNamespace: '${root}\\DAO'
-        })
+        this.submitSettings(mySpotDefaults)
       },
       onTemplateChange (event) {
         const {name, value} = event.target
-
-        /** const availableVars = ['root', 'database', 'table']
-        let result = []
-        const regVar = /\${(\w+?)}/g
-        let m = null
-        while ((m = regVar.exec(value)) !== null) {
-          result.push(m)
+        if (this.settings.myspot[name] !== value) {
+          this.submitSettings({[name]: value})
+          this.$Message.info('Settings updated')
         }
-        result.map(item => item[1]).forEach(item => {
-        }) */
-
-        this.submitSettings({[name]: value})
       }
     }
   }

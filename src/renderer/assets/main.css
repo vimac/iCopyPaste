@@ -5,7 +5,14 @@
     color: #333;
     text-shadow: 1px 1px 0 #bbb;
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    transition: right 0.2s ease, bottom 0.2s ease;
     font-size: 8pt;
+    opacity: 0;
+}
+
+#codePoetry.animate {
+    opacity: 1;
+    transition: opacity 0.2s ease-in;
 }
 
 pre[class*="language-"] {
@@ -91,16 +98,107 @@ code[class*="language-"], pre[class*="language-"] {
     z-index: 100;
 }
 
+#informationPanel {
+    z-index: 999;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    cursor: default;
+    text-align: left;
+    color: #999;
+    float: left;
+    height: 100%;
+    margin-left: 20px;
+}
+
+#informationPanel > span:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    filter: blur(10px);
+}
+
+#informationPanel > span {
+    position: relative;
+    padding: 3px 10px;
+    font-size: 8pt;
+    background: rgba(233, 233, 233, .2);
+    border-radius: 5px;
+    color: #ccc;
+    overflow: hidden;
+}
+
+#informationPanel > span.highlight {
+    animation: informationPanelEffects 1.25s linear infinite;
+}
+
+@keyframes informationPanelEffects {
+    from {
+        color: #ccc;
+    }
+    50% {
+        color: #fff;
+    }
+    to {
+        color: #ccc;
+    }
+}
+
+#informationPanel > span.highlight:before {
+    animation: informationPanelBlurEffects 1.25s linear infinite;
+}
+
+@keyframes informationPanelBlurEffects {
+    from {
+        background: rgba(0, 0, 0, .2);
+    }
+    50% {
+        background: rgba(233, 233, 233, .2);
+    }
+    to {
+        background: rgba(0, 0, 0, .2);
+    }
+}
+
+#menuRightSide {
+    height: 100%;
+    float: right;
+}
+
 #sidebar {
     background: linear-gradient(45deg, #2B2B2B 25%, #3C3F41 0, #3C3F41 50%, #2B2B2B 0, #2B2B2B 75%, #3C3F41 0);
     background-size: 4.2px 4.2px;
-    padding: 0 10px 0;
-    box-sizing: border-box;
     white-space: nowrap;
     overflow-x: hidden;
     overflow-y: auto;
 }
 
+#sidebar .ivu-menu-dark {
+    background: transparent;
+}
+
+#sidebar .ivu-menu-dark.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
+    background: rgba(18, 18, 26, 0.3);
+}
+
+.sideCard {
+    margin: 0 10px 0;
+}
+
 .filterPanel {
     padding: 6px 10px 4px;
+}
+
+
+#projectPageSecondNav {
+    margin: 5px 10px;
+}
+
+.ivu-breadcrumb > span:last-child {
+    font-weight: normal;
+}
+
+.ivu-split-pane {
+    overflow-x: auto;
 }
