@@ -3,12 +3,12 @@ export const convertFileListToTree = (fileList, projectTopDirName, treeNodeFn = 
   treeNodeFn && treeNodeFn(topLevel)
 
   fileList.forEach((elt, index) => {
-    const {filename} = elt
+    const {filename, fileType, table} = elt
     const filenameParts = filename.split('/')
     let currentLevel = topLevel.children
     filenameParts.forEach((part, index) => {
       if (index === filenameParts.length - 1) {
-        const node = {title: part, nodeType: 'file'}
+        const node = {title: part, nodeType: 'file', meta: {fileType, table}}
         treeNodeFn && treeNodeFn(node)
         currentLevel.push(node)
         return
@@ -25,13 +25,4 @@ export const convertFileListToTree = (fileList, projectTopDirName, treeNodeFn = 
   })
 
   return topLevel
-}
-
-export const iterAndCallFn = (o, fn) => {
-  fn(o)
-  Object.keys(o).forEach((k) => {
-    if (o[k] instanceof Array) {
-      o[k].forEach(item => iterAndCallFn(item, fn))
-    }
-  })
 }

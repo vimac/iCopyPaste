@@ -1,5 +1,5 @@
 <template>
-  <Tabs v-model="activateTab" @on-click="tabClick">
+  <Tabs v-model="activateTab">
     <TabPane label="Reference" name="ref">
       <List size="small">
         <ListItem v-for="{name, type, nullable, key, comment} in columns" class="columnListItem" :key="name">
@@ -17,19 +17,18 @@
       </List>
     </TabPane>
     <TabPane label="Raw Definition" name="raw">
-      <CodeHighlight language="sql">{{ddl}}</CodeHighlight>
+      <CodeFileContent :database="this.database" :table="this.table" language="sql" fileType="ddl"/>
     </TabPane>
   </Tabs>
 </template>
 
 <script>
-  import CodeHighlight from 'vue-code-highlight/src/CodeHighlight.vue'
-  import 'prism-es6/components/prism-sql'
+  import CodeFileContent from '../Widget/CodeFileContent'
 
   export default {
     name: 'ColumnDetail',
     components: {
-      CodeHighlight
+      CodeFileContent
     },
     props: {
       database: String,
@@ -38,23 +37,10 @@
     },
     data () {
       return {
-        activateTab: 'ref',
-        ddl: ''
+        activateTab: 'ref'
       }
     },
-    methods: {
-      tabClick () {
-        if (this.activateTab === 'raw' && !this.ddl) {
-          this.$conn.fetchTableDDL(this.database, this.table)
-            .then(ddl => {
-              this.ddl = ddl
-            })
-            .catch(err => {
-              this.$Message.error(err.message)
-            })
-        }
-      }
-    }
+    methods: {}
   }
 </script>
 

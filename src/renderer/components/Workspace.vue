@@ -7,14 +7,6 @@
           Disconnect
         </MenuItem>
       </div>
-      <!--      <Submenu name="save">-->
-      <!--        <template slot="title">-->
-      <!--          <Icon type="md-archive"/>-->
-      <!--          Save & Export-->
-      <!--        </template>-->
-      <!--        <MenuItem name="saveProject">Save Project</MenuItem>-->
-      <!--        <MenuItem name="exportGenerated">Export Generated Files</MenuItem>-->
-      <!--      </Submenu>-->
       <MenuItem name="project" to="/workspace/project/files">
         <Icon type="ios-apps"/>
         Project

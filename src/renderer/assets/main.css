@@ -16,8 +16,8 @@
 }
 
 pre[class*="language-"] {
+    margin: 0;
     font-size: 12px;
-    padding: .5em;
 }
 
 pre > code {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="panel">
-      <ColumnDetail :database="database" :table="table" :columns="columns"/>
+      <ColumnDetail :database="database" :table="table" :columns="this.columns" />
     </div>
     <div class="panel">
       <h1>
@@ -9,30 +9,36 @@
         Data Object Code
       </h1>
     </div>
-    <CodeHighlight :language="language">{{code}}</CodeHighlight>
+    <CodeFileContent :database="this.database" :table="this.table" language="php" fileType="dataModel" @on-async-loaded="onCodeLoaded" />
   </div>
 </template>
 
 <script>
   import ColumnDetail from './ColumnDetail'
   import CodeHighlight from 'vue-code-highlight/src/CodeHighlight'
+  import CodeFileContent from '../Widget/CodeFileContent'
 
   export default {
     name: 'ModelPanel',
     components: {
+      CodeFileContent,
       ColumnDetail,
       CodeHighlight
     },
     props: {
       database: String,
-      table: String,
-      columns: Array,
-      code: String
+      table: String
     },
     data () {
       return {
         language: 'php',
-        ddl: ''
+        columns: []
+      }
+    },
+    methods: {
+      onCodeLoaded (code, meta) {
+        const {fetchedColumns} = meta
+        this.columns = fetchedColumns
       }
     }
   }

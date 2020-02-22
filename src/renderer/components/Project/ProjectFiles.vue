@@ -2,10 +2,10 @@
   <div id="projectFilesContainer">
     <Split v-model="split">
       <div slot="left">
-        <Tree :data="treeData"/>
+        <Tree ref="fileTree" :data="treeData" @on-select-change="onTreeSelect"/>
       </div>
       <div slot="right">
-
+        <CodeFileContent language="php" :database="config.database" :table="selectedNode.meta.table" v-if="selectedNode && selectedNode.nodeType === 'file'" :fileType="selectedNode.meta.fileType"/>
       </div>
     </Split>
   </div>
@@ -13,10 +13,12 @@
 
 <script>
   import {mapState} from 'vuex'
-  import {convertFileListToTree} from '../../generator/FIleListUtil'
+  import {convertFileListToTree} from '../../generator/FileListUtil'
+  import CodeFileContent from '../Widget/CodeFileContent'
 
   export default {
     name: 'ProjectFiles',
+    components: {CodeFileContent},
     computed: {
       ...mapState({
         config: state => state.db.config,
@@ -38,12 +40,22 @@
               data.title
             ])
           }
+          // treeNode['children-key'] =
+          if (treeNode.meta && treeNode.fileType === 'dataModel') {
+            // do something wtih datamodel
+          }
         })]
       }
     },
     data () {
       return {
-        split: 0.35
+        split: 0.35,
+        selectedNode: null
+      }
+    },
+    methods: {
+      onTreeSelect () {
+        this.selectedNode = this.$refs.fileTree.getSelectedNodes().pop()
       }
     }
   }

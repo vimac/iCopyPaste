@@ -18,7 +18,8 @@ const getDataModelMeta = {
       name: getDataObjectShortName.myspot(database, table),
       fullName: getDataObjectFullName(database, table),
       table,
-      filename: getDataObjectFilename(database, table)
+      filename: getDataObjectFilename(database, table),
+      fileType: 'dataModel'
     }
   }
 }

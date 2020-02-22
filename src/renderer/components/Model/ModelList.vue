@@ -1,17 +1,12 @@
 <template>
   <div>
-    <Collapse accordion simple @on-change="showModel" v-model="activateModel">
+    <Collapse accordion simple v-model="activateModel">
       <Panel v-for="item in metaData" :name="item.table" hide-arrow>
         <Icon type="ios-list-box-outline"/>
         {{item.fullName}}
         <span class="tableName">{{item.filename}}</span>
         <template slot="content">
-          <Spin v-if="activateModel[0] === item.table && spinLoading">
-            <Icon type="ios-loading" size=80 class="spinLoading"></Icon>
-          </Spin>
-          <ModelPanel v-if="activateModel[0] === item.table && !spinLoading"
-                      :code="currentLoadedCode"
-                      :columns="currentLoadedColumns"
+          <ModelPanel v-if="activateModel[0] === item.table "
                       :table="item.table"
                       :database="config.database"
           />
@@ -48,52 +43,13 @@
     data () {
       return {
         activateModel: [],
-        language: 'php',
-        spinLoading: false,
-        currentLoadedCode: '',
-        currentLoadedColumns: []
-      }
-    },
-    methods: {
-      showModel () {
-        if (this.activateModel.length) {
-          const [table] = this.activateModel
-          this.spinLoading = true
-
-          this.$conn.fetchColumns(this.config.database, table)
-            .then((fetchedColumns) => {
-              const code = this.$modelGenerator.getDataModelByTable('myspot', this.config.database, table, fetchedColumns)
-              this.spinLoading = false
-              this.currentLoadedCode = code
-              this.currentLoadedColumns = fetchedColumns
-            })
-            .catch(err => {
-              this.spinLoading = false
-              this.$Message.error(err.message)
-            })
-        }
+        language: 'php'
       }
     }
   }
 </script>
 
 <style scoped>
-  .spinLoading {
-    animation: spinLoadingEffects 1s linear infinite;
-  }
-
-  @keyframes spinLoadingEffects {
-    from {
-      transform: rotate(0deg);
-    }
-    50% {
-      transform: rotate(180deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   .tableName {
     color: #ccc;
   }

@@ -12,6 +12,14 @@
           <Icon type="ios-construct"/>
           <span>Settings</span>
         </MenuItem>
+        <MenuItem name="saveProject">
+          <Icon type="md-archive"/>
+          <span>Save</span>
+        </MenuItem>
+        <MenuItem name="exportGenerated">
+          <Icon type="md-download"/>
+          <span>Export</span>
+        </MenuItem>
       </Menu>
     </Sider>
     <Content>
