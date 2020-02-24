@@ -16,9 +16,9 @@ const getDataModelMeta = {
   myspot: (database, table) => {
     return {
       name: getDataObjectShortName.myspot(database, table),
+      filename: getDataObjectFilename(database, table),
       fullName: getDataObjectFullName(database, table),
       table,
-      filename: getDataObjectFilename(database, table),
       fileType: 'dataModel'
     }
   }
@@ -55,7 +55,7 @@ export default {
     let modelGenerator
 
     modelGenerator = {
-      getMetaDataByTables (type, database, tables) {
+      getDataObjectMetaDataByTables (type, database, tables) {
         return tables.map(table => getDataModelMeta[type](database, table))
       },
       getDataModelByTable (type, ...args) {

@@ -108,7 +108,7 @@
             break
           }
           case 'mySpotBaseDAO': {
-            const code = generateBaseDAOTemplate()
+            const {code} = generateBaseDAOTemplate()
             this.code = code
             this.$emit('on-loaded', code, {})
           }

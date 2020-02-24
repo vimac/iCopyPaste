@@ -1,33 +1,50 @@
-export const convertFileListToTree = (fileList, queries, projectTopDirName, treeNodeFn = null) => {
-  const topLevel = {title: projectTopDirName, children: [], nodeType: 'dir'}
-  treeNodeFn && treeNodeFn(topLevel)
+import {getBaseDAOMeta} from './MySpotGenerator'
 
-  fileList.forEach((elt, index) => {
-    const {filename, fileType, table} = elt
-    const filenameParts = filename.split('/')
-    let currentLevel = topLevel.children
-    filenameParts.forEach((part, index) => {
-      if (index === filenameParts.length - 1) {
-        const node = {title: part, nodeType: 'file', meta: {fileType, table}}
-        treeNodeFn && treeNodeFn(node)
-        currentLevel.push(node)
-        return
-      }
-      let foundIndex = currentLevel.findIndex(item => item.title === part)
-      if (foundIndex === -1) {
-        const node = {title: part, nodeType: 'dir', children: []}
-        treeNodeFn && treeNodeFn(node)
-        currentLevel.push(node)
-        foundIndex = currentLevel.length - 1
-      }
-      currentLevel = currentLevel[foundIndex].children
-    })
+export const convertFileListToTree = (fileList, queries, projectTopDirName, treeNodeFn = null) => {
+  const treeRoot = {title: projectTopDirName, children: [], nodeType: 'dir'}
+  treeNodeFn && treeNodeFn(treeRoot, {}, {isNew: true})
+
+  fileList.forEach((elt) => {
+    const {filename} = elt
+    addFileToTree(treeRoot.children, filename.split('/'), elt, treeNodeFn)
   })
 
-  console.log(queries)
+  if (queries.length === 0) {
+    return treeRoot
+  }
+  const baseDAOMeta = getBaseDAOMeta()
+  addFileToTree(treeRoot.children, baseDAOMeta.filename.split('/'), {...baseDAOMeta, fileType: 'baseDAO'}, treeNodeFn)
 
-  // queries.forEach((elt, index) => {
-  // })
+  queries.forEach(elt => {
+    const {configurationFilename, daoFilename} = elt
+    addFileToTree(treeRoot.children, configurationFilename.split('/'), {fileType: 'mySpotConfiguration', ...elt}, treeNodeFn)
+    addFileToTree(treeRoot.children, daoFilename.split('/'), {fileType: 'mySpotDAO', ...elt}, treeNodeFn)
+  })
 
-  return topLevel
+  return treeRoot
+}
+
+const addFileToTree = (children, filenameParts, meta, nodeFn) => {
+  const part = filenameParts.shift()
+  let foundIndex = children.findIndex(child => child.title === part)
+
+  if (filenameParts.length > 0) {
+    if (foundIndex === -1) {
+      const node = {title: part, nodeType: 'dir', children: []}
+      nodeFn && nodeFn(node, meta, {isNew: true})
+      children.push(node)
+      foundIndex = children.length - 1
+    } else {
+      nodeFn && nodeFn(children[foundIndex], meta, {isNew: false})
+    }
+    addFileToTree(children[foundIndex].children, filenameParts, meta, nodeFn)
+  } else {
+    if (foundIndex === -1) {
+      const node = {title: part, nodeType: 'file', meta}
+      nodeFn && nodeFn(node, meta, {isNew: true})
+      children.push(node)
+    } else {
+      nodeFn && nodeFn(children[foundIndex], meta, {isNew: false})
+    }
+  }
 }

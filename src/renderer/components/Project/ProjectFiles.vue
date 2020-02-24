@@ -5,7 +5,9 @@
         <Tree ref="fileTree" :data="treeData" @on-select-change="onTreeSelect"/>
       </div>
       <div slot="right">
-        <CodeFileContent language="php" :database="config.database" :table="selectedNode.meta.table" v-if="selectedNode && selectedNode.nodeType === 'file'" :fileType="selectedNode.meta.fileType"/>
+        <CodeFileContent language="php" :database="config.database" :table="selectedNode.meta.table"
+                         v-if="selectedNode && selectedNode.nodeType === 'file'"
+                         :fileType="selectedNode.meta.fileType"/>
       </div>
     </Split>
   </div>
@@ -15,6 +17,7 @@
   import {mapState} from 'vuex'
   import {convertFileListToTree} from '../../generator/FileListUtil'
   import CodeFileContent from '../Widget/CodeFileContent'
+  import {getQueryMeta} from '../../generator/MySpotGenerator'
 
   export default {
     name: 'ProjectFiles',
@@ -27,25 +30,37 @@
         query: state => state.query
       }),
       metaData () {
-        return this.$modelGenerator.getMetaDataByTables('myspot', this.config.database, this.modelList)
+        return this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.config.database, this.modelList)
       },
       treeData () {
-        return [convertFileListToTree(this.metaData, this.query.queries, 'MyProject', (treeNode) => {
-          treeNode.expand = treeNode.nodeType === 'dir'
-          treeNode.render = (h, {root, node, data}) => {
-            return h('span', [
-              h('Icon', {
-                props: {type: treeNode.nodeType === 'dir' ? 'ios-folder-open' : 'ios-document'},
-                style: {marginRight: '5px'}
-              }),
-              data.title
-            ])
+        return [convertFileListToTree(
+          this.metaData,
+          getQueryMeta(this.config.database, this.query.queries),
+          'MyProject',
+          (treeNode, meta, {isNew}) => {
+            if (isNew) {
+              treeNode.expand = treeNode.nodeType === 'dir'
+              treeNode.render = (h, {root, node, data}) => {
+                return h('span', [
+                  h('Icon', {
+                    props: {type: treeNode.nodeType === 'dir' ? 'ios-folder-open' : 'ios-document'},
+                    style: {marginRight: '5px'}
+                  }),
+                  data.title
+                ])
+              }
+              // treeNode['children-key'] =
+              if (treeNode.meta && treeNode.fileType === 'dataModel') {
+                // do something wtih datamodel
+              }
+            } else {
+              // if (treeNode.meta && treeNode.fileType === 'dao') {
+              //
+              // }
+            }
           }
-          // treeNode['children-key'] =
-          if (treeNode.meta && treeNode.fileType === 'dataModel') {
-            // do something wtih datamodel
-          }
-        })]
+        )
+        ]
       }
     },
     data () {

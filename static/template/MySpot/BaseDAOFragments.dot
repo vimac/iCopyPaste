@@ -1,6 +1,6 @@
 <?php
 
-namespace {{=it.baseDAONamespace}};
+namespace {{=it.namespace}};
 
 use Exception;
 use PDO;
@@ -8,10 +8,10 @@ use MySpot\SqlMapConfig;
 use MySpot\SqlMapStatement;
 
 /**
- * This file is just a example of {{=it.shortBaseDAOName}}
+ * This file is just a example of {{=it.shortName}}
  * You can modify all of these code to fit your web application
  */
-abstract class {{=it.shortBaseDAOName}} {
+abstract class {{=it.shortName}} {
 
     /**
      * @var SqlMapConfig

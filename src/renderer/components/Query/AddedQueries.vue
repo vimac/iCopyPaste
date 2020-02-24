@@ -1,8 +1,8 @@
 <template>
   <Content id="queryContent">
     <Collapse v-if="query.queries.length > 0" accordion simple v-model="activateQuery">
-      <Panel v-for="q in query.queries" :name="q.fullQueryName" hide-arrow>
-        <span class="rightPart" @click.stop="removeButtonClick('test')">
+      <Panel v-for="(q, idx) in query.queries" :name="q.fullQueryName" hide-arrow>
+        <span class="rightPart" @click.stop="removeButtonClick(idx)">
           <Icon type="ios-trash-outline"/>
         </span>
         <Icon type="ios-list-box-outline"/>
@@ -21,7 +21,7 @@
 
 <script>
   import CodeIsPoetry from '../Widget/CodeIsPoetry'
-  import {mapState} from 'vuex'
+  import {mapActions, mapState} from 'vuex'
   import MySpotQueryCodes from '../Widget/MySpotQueryCodes'
 
   export default {
@@ -39,8 +39,11 @@
       }
     },
     methods: {
-      removeButtonClick (queryId) {
-        console.log(queryId)
+      ...(mapActions(['updateQueries'])),
+      removeButtonClick (queryIdx) {
+        this.updateQueries(this.query.queries.filter((v, i) => {
+          return i !== queryIdx
+        }))
       }
     }
   }

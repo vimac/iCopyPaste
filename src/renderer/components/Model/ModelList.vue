@@ -37,7 +37,7 @@
         modelList: state => state.model.modelList
       }),
       metaData () {
-        return this.$modelGenerator.getMetaDataByTables('myspot', this.config.database, this.modelList)
+        return this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.config.database, this.modelList)
       }
     },
     data () {

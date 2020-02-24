@@ -51,7 +51,7 @@ const processLimit = (limitType) => {
 
 /** Configuration **/
 
-const getConfigurationFilename = (database, table, suffix = '.php') => {
+export const getConfigurationFilename = (database, table, suffix = '.php') => {
   return 'config/myspot/' + database + '/' + table + suffix
 }
 
@@ -105,10 +105,6 @@ const queryGenerators = {
 /** DAO Generators **/
 const getConfigTemplateNameWithQueryName = (database, table, queryName) => database + '.' + table + '.' + queryName
 
-const getBaseDAOName = () => {
-  return getBaseDAONamespace() + '\\' + getShortBaseDAOName()
-}
-
 const getBaseDAONamespace = () => {
   const vars = {
     root: projectSettings.myspot.rootNS
@@ -117,9 +113,21 @@ const getBaseDAONamespace = () => {
   return render(vars)
 }
 
-const getShortBaseDAOName = () => {
+const getBaseDAOShortName = () => {
   return 'Base' + projectSettings.myspot.daoSuffix
 }
+
+const getBaseDAOFullName = () => {
+  return getBaseDAONamespace() + '\\' + getBaseDAOShortName()
+}
+
+const getBaseDAOFilename = () => {
+  const fullName = getBaseDAOFullName().split('\\')
+  fullName.shift()
+  return 'src/' + fullName.join('/') + '.php'
+}
+
+const getDAOShortName = table => ucfirst(underscoreToCamelCase(table)) + projectSettings.myspot.daoSuffix
 
 const getDAONamespace = (database) => {
   const vars = {
@@ -130,7 +138,13 @@ const getDAONamespace = (database) => {
   return render(vars)
 }
 
-const getDAOShortName = table => ucfirst(underscoreToCamelCase(table)) + projectSettings.myspot.daoSuffix
+const getDAOFullName = (database, table) => getDAONamespace(database) + '\\' + getDAOShortName(table)
+
+const getDAOFilename = (database, table) => {
+  const fullName = getDAOFullName(database, table).split('\\')
+  fullName.shift()
+  return 'src/' + fullName.join('/') + '.php'
+}
 
 const getArgsFromFieldsArray = (fields, columns, prefix = '') => {
   let args = []
@@ -350,8 +364,8 @@ const renderMySpotDAO = (queryName, queryType, database, table, vars) => {
   return dotRender({
     className: getDAOShortName(table),
     daoNamespace: getDAONamespace(database),
-    baseDAOName: getBaseDAOName(),
-    shortBaseDAOName: getShortBaseDAOName(),
+    baseDAOName: getBaseDAOFullName(),
+    shortBaseDAOName: getBaseDAOShortName(),
     functions: [{
       queryName,
       methodName: queryType,
@@ -506,8 +520,31 @@ export function generateDAOCode (queryName, queryType, database, table, columns,
 
 export function generateBaseDAOTemplate () {
   const render = getTemplateRender('/template/MySpot/BaseDAOFragments.dot')
-  return render({
-    baseDAONamespace: getBaseDAONamespace(),
-    shortBaseDAOName: getShortBaseDAOName()
+  const namespace = getBaseDAONamespace()
+  const shortName = getBaseDAOShortName()
+  const filename = getBaseDAOFilename()
+  const code = render({
+    namespace, shortName
+  })
+
+  return {code, namespace, shortName, filename}
+}
+
+export function getBaseDAOMeta () {
+  const namespace = getBaseDAONamespace()
+  const shortName = getBaseDAOShortName()
+  const filename = getBaseDAOFilename()
+  return {
+    namespace, shortName, filename
+  }
+}
+
+export function getQueryMeta (database, queries) {
+  return queries.map(query => {
+    return {
+      configurationFilename: getConfigurationFilename(database, query.table),
+      daoFilename: getDAOFilename(database, query.table),
+      ...query
+    }
   })
 }
