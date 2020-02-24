@@ -1,6 +1,12 @@
 <template>
-  <div>
+  <Content id="queryContent">
     <Form :label-width="90">
+      <FormItem label="Operation">
+        <Button size="small" type="primary" @click="addToProject">
+          <Icon type="ios-add"/>
+          Add To Project
+        </Button>
+      </FormItem>
       <FormItem label="Type">
         <RadioGroup v-model="queryType" size="small" type="button">
           <Radio label="select">SELECT</Radio>
@@ -66,73 +72,74 @@
       </FormItem>
     </Form>
     <div>
-      <Tabs ref="tab">
-        <TabPane label="SQL Template" class="codeTab">
-          <ButtonGroup class="copyCode">
-            <Button @click="onCopyExpanded" size="small" icon="ios-copy-outline">Expanded</Button>
-            <Button @click="onCopySingleLine" size="small" icon="ios-copy-outline">Single line</Button>
-          </ButtonGroup>
-          <CodeFileContent language="sql"
-                           fileType="sql"
-                           :database="config.database"
-                           :table="table"
-                           :params="{queryType, columns, fields, where, order, limitType}"
-                           @on-loaded="onSqlTemplateLoaded"
-          />
-        </TabPane>
-        <TabPane label="Config" class="codeTab">
-          <ButtonGroup class="copyCode">
-            <Button @click="onCopyConfig" size="small" icon="ios-copy-outline">Whole file</Button>
-            <Button @click="onCopyConfigItem" size="small" icon="ios-copy-outline">Single item</Button>
-          </ButtonGroup>
-          <CodeFileContent language="php"
-                           fileType="myspotConfiguration"
-                           :database="config.database"
-                           :table="table"
-                           :params="{queryType, columns, fields, where, returnType, sqlTemplateInline}"
-                           @on-loaded="onMySpotConfigurationLoaded"
-          />
-        </TabPane>
-        <TabPane label="DAO" class="codeTab">
-          <ButtonGroup class="copyCode">
-            <Button @click="onCopyDAO" size="small" icon="ios-copy-outline">Class</Button>
-            <Button @click="onCopyDAOMethod" size="small" icon="ios-copy-outline">Method</Button>
-          </ButtonGroup>
-          <CodeFileContent language="php"
-                           fileType="myspotDAO"
-                           :database="config.database"
-                           :table="table"
-                           :params="{queryName, queryType, columns, fields, where, order, limitType, argsType, returnType}"
-          />
+      <!--      <Tabs ref="tab">-->
+      <!--        <TabPane label="SQL Template" class="codeTab">-->
+      <!--          <ButtonGroup class="copyCode">-->
+      <!--            <Button @click="onCopyExpanded" size="small" icon="ios-copy-outline">Expanded</Button>-->
+      <!--            <Button @click="onCopySingleLine" size="small" icon="ios-copy-outline">Single line</Button>-->
+      <!--          </ButtonGroup>-->
+      <!--          <CodeFileContent language="sql"-->
+      <!--                           fileType="sql"-->
+      <!--                           :database="config.database"-->
+      <!--                           :table="table"-->
+      <!--                           :params="{queryType, columns, fields, where, order, limitType}"-->
+      <!--                           @on-loaded="onSqlTemplateLoaded"-->
+      <!--          />-->
+      <!--        </TabPane>-->
+      <!--        <TabPane label="Config" class="codeTab">-->
+      <!--          <ButtonGroup class="copyCode">-->
+      <!--            <Button @click="onCopyConfig" size="small" icon="ios-copy-outline">Whole file</Button>-->
+      <!--            <Button @click="onCopyConfigItem" size="small" icon="ios-copy-outline">Single item</Button>-->
+      <!--          </ButtonGroup>-->
+      <!--          <CodeFileContent language="sql"-->
+      <!--                           fileType="sql"-->
+      <!--                           :database="config.database"-->
+      <!--                           :table="table"-->
+      <!--                           :params="{queryType, columns, fields, where, order, limitType}"-->
+      <!--                           @on-loaded="onSqlTemplateLoaded"-->
+      <!--          />-->
+      <!--        </TabPane>-->
+      <!--        <TabPane label="DAO" class="codeTab">-->
+      <!--          <ButtonGroup class="copyCode">-->
+      <!--            <Button @click="onCopyDAO" size="small" icon="ios-copy-outline">Class</Button>-->
+      <!--            <Button @click="onCopyDAOMethod" size="small" icon="ios-copy-outline">Method</Button>-->
+      <!--          </ButtonGroup>-->
+      <!--          <CodeFileContent language="php"-->
+      <!--                           fileType="myspotDAO"-->
+      <!--                           :database="config.database"-->
+      <!--                           :table="table"-->
+      <!--                           :params="{queryName, queryType, columns, fields, where, order, limitType, argsType, returnType}"-->
+      <!--          />-->
 
-        </TabPane>
-        <TabPane label="BaseDAO" class="codeTab">
-          <ButtonGroup class="copyCode">
-            <Button @click="onCopyBaseDAO" size="small" icon="ios-copy-outline">BaseDAO</Button>
-          </ButtonGroup>
-          <CodeFileContent language="php"
-                           fileType="myspotBaseDAO"
-                           :params="{}"
-          />
-        </TabPane>
-      </Tabs>
+      <!--        </TabPane>-->
+      <!--        <TabPane label="BaseDAO" class="codeTab">-->
+      <!--          <ButtonGroup class="copyCode">-->
+      <!--            <Button @click="onCopyBaseDAO" size="small" icon="ios-copy-outline">BaseDAO</Button>-->
+      <!--          </ButtonGroup>-->
+      <!--          <CodeFileContent language="php"-->
+      <!--                           fileType="myspotBaseDAO"-->
+      <!--                           :params="{}"-->
+      <!--          />-->
+      <!--        </TabPane>-->
+      <!--      </Tabs>-->
+      <MySpotQueryCodes :database="config.database" :table="table" :params="mySpotQueryCodeParams"
+                        @on-updated-configuration="onUpdatedConfiguration"/>
     </div>
-  </div>
+  </Content>
 </template>
 
 <script>
-  import {mapState} from 'vuex'
-  import CodeHighlight from 'vue-code-highlight/src/CodeHighlight.vue'
-  import 'prism-es6/components/prism-sql'
-  import 'prism-es6/components/prism-markup-templating'
-  import 'prism-es6/components/prism-php'
+  import {mapActions, mapState} from 'vuex'
   import CodeFileContent from '../Widget/CodeFileContent'
+  import MySpotQueryCodes from '../Widget/MySpotQueryCodes'
+
+  const equal = require('deep-equal')
 
   export default {
     name: 'QueryForm',
     components: {
-      CodeFileContent,
-      CodeHighlight
+      MySpotQueryCodes,
+      CodeFileContent
     },
     computed: {
       ...mapState({
@@ -141,7 +148,8 @@
         daoCode: state => state.code.daoCode,
         daoMethodCode: state => state.code.daoMethodCode,
         baseDAOCode: state => state.code.baseDAOCode,
-        config: state => state.db.config
+        config: state => state.db.config,
+        query: state => state.query
       }),
       table () {
         return this.$route.params.table
@@ -187,11 +195,38 @@
           })
           this.order = result
         }
+      },
+      mySpotQueryCodeParams () {
+        return {
+          queryType: this.queryType,
+          columns: this.columns,
+          fields: this.fields,
+          where: this.where,
+          order: this.order,
+          limitType: this.limitType,
+          argsType: this.argsType,
+          returnType: this.returnType
+        }
       }
     },
     methods: {
-      generateSQL () {
-        // this.$dot.generateMySpotSQL(this.queryType, this.database, this.table, this.columns, this.fields, this.where, this.order, this.limitType, this.argsType, this.returnType)
+      ...(mapActions(['addQuery'])),
+      onUpdatedConfiguration (code, payload) {
+        const {queryName} = payload
+        this.queryName = queryName
+      },
+      addToProject () {
+        const q = {
+          queryName: this.queryName,
+          table: this.table,
+          params: this.mySpotQueryCodeParams
+        }
+        if (this.query.queries.filter(item => equal(item, q)).length > 0) {
+          this.$Message.destroy()
+          this.$Message.error('Duplicated query')
+          return
+        }
+        this.addQuery(q)
       },
       onCopyExpanded () {
         require('electron').clipboard.writeText(this.sqlTemplate)
@@ -232,22 +267,13 @@
               this.$Message.error(err.message)
             })
         })
-      },
-      onSqlTemplateLoaded (code, payload) {
-        const {sqlTemplate, sqlTemplateInline} = payload
-        this.sqlTemplate = sqlTemplate
-        this.sqlTemplateInline = sqlTemplateInline
-      },
-      onMySpotConfigurationLoaded (code, payload) {
-        const {queryName} = payload
-        this.queryName = queryName
       }
     },
     mounted () {
-      this.loadColumns().then(() => this.generateSQL())
+      this.loadColumns()
     },
     watch: {
-      type (newType, oldType) {
+      queryType (newType, oldType) {
         this.disableField = false
         this.disableOrder = false
         this.disableWhere = false
@@ -285,7 +311,6 @@
           this.returnType = this.returnType === 'sqlMapResult' ? 'sqlMapResult' : 'do'
           this.disableReturnType = ['lines', 'lastInsertId']
         }
-        this.generateSQL()
       },
       $route (to, from) {
         this.queryType = 'select'
@@ -295,17 +320,8 @@
         this.limitType = 'no'
       },
       table (to, from) {
-        this.loadColumns().then(() => this.generateSQL())
-      },
-      ...(() => {
-        let x = {
-          handler (newX, oldX) {
-            this.generateSQL()
-          },
-          deep: true
-        }
-        return {where: x, order: x, fields: x, limitType: x, argsType: x, returnType: x}
-      })()
+        this.loadColumns()
+      }
     },
     data () {
       return {
@@ -497,15 +513,15 @@
     padding-right: 4px;
   }
 
-  .codeTab {
-    position: relative;
-  }
+  /*.codeTab {*/
+  /*  position: relative;*/
+  /*}*/
 
-  .copyCode {
-    position: absolute;
-    right: 10px;
-    top: 14px;
-    z-index: 10000;
-  }
+  /*.copyCode {*/
+  /*  position: absolute;*/
+  /*  right: 10px;*/
+  /*  top: 14px;*/
+  /*  z-index: 10000;*/
+  /*}*/
 
 </style>

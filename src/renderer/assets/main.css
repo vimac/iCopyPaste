@@ -15,14 +15,6 @@
     transition: opacity 0.2s ease-in;
 }
 
-pre[class*="language-"] {
-    margin: 0;
-    font-size: 12px;
-}
-
-pre > code {
-    font-size: 11px;
-}
 
 hr {
     border-top: 1px dotted #ddd;
@@ -49,8 +41,17 @@ hr {
     display: flex;
 }
 
+pre[class*="language-"] {
+    margin: 0;
+    font-size: 11px;
+    max-height: 200px;
+}
+
+pre > code {
+    font-size: 11px;
+}
+
 code[class*="language-"], pre[class*="language-"] {
-    white-space: pre-wrap;
 }
 
 .ivu-card-head {
@@ -109,16 +110,6 @@ code[class*="language-"], pre[class*="language-"] {
     margin-left: 20px;
 }
 
-#informationPanel > span:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    filter: blur(10px);
-}
-
 #informationPanel > span {
     position: relative;
     padding: 3px 10px;
@@ -130,14 +121,17 @@ code[class*="language-"], pre[class*="language-"] {
 }
 
 #informationPanel > span.highlight {
-    animation: informationPanelEffects 1.25s linear infinite;
+    animation: informationPanelEffects 1.5s ease-in;
 }
 
 @keyframes informationPanelEffects {
     from {
         color: #ccc;
     }
-    50% {
+    10% {
+        color: #fff;
+    }
+    90% {
         color: #fff;
     }
     to {
@@ -145,19 +139,40 @@ code[class*="language-"], pre[class*="language-"] {
     }
 }
 
-#informationPanel > span.highlight:before {
-    animation: informationPanelBlurEffects 1.25s linear infinite;
+#informationPanel > span > span.progressBar {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    filter: blur(5px);
+    background: transparent;
+    display: none;
+    width: 0;
+}
+
+#informationPanel > span.highlight > span.progressBar {
+    display: block;
+    animation: informationPanelBlurEffects 1.5s linear;
 }
 
 @keyframes informationPanelBlurEffects {
     from {
-        background: rgba(0, 0, 0, .2);
+        background: rgba(0, 120, 233, .3);
+        width: 0;
     }
-    50% {
-        background: rgba(233, 233, 233, .2);
+    35% {
+        background: rgba(0, 120, 233, .5);
+        width: 50%;
+    }
+    70% {
+        background: rgba(0, 120, 233, .3);
+        width: 100%;
     }
     to {
-        background: rgba(0, 0, 0, .2);
+        background: rgba(0, 120, 233, 0);
+        width: 100%;
     }
 }
 
@@ -190,15 +205,11 @@ code[class*="language-"], pre[class*="language-"] {
     padding: 6px 10px 4px;
 }
 
-
-#projectPageSecondNav {
-    margin: 5px 10px;
-}
-
-.ivu-breadcrumb > span:last-child {
-    font-weight: normal;
-}
-
 .ivu-split-pane {
     overflow-x: auto;
+}
+
+#queryContent {
+    width: calc(100vw - 250px);
+    padding: 10px;
 }

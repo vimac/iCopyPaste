@@ -1,16 +1,48 @@
 <template>
-  <div id="frame">
-    <div id="hint">Select a table from the menu to start</div>
-    <CodeIsPoetry :display="true"/>
-  </div>
+  <Content id="queryContent">
+    <Collapse v-if="query.queries.length > 0" accordion simple v-model="activateQuery">
+      <Panel v-for="q in query.queries" :name="q.fullQueryName" hide-arrow>
+        <span class="rightPart" @click.stop="removeButtonClick('test')">
+          <Icon type="ios-trash-outline"/>
+        </span>
+        <Icon type="ios-list-box-outline"/>
+        {{config.database}}.{{q.table}}.{{q.queryName}}
+        <div slot="content">
+          <MySpotQueryCodes :database="config.database" :table="q.table" :params="q.params"/>
+        </div>
+      </Panel>
+    </Collapse>
+    <div v-else>
+      Select a table on the left to start
+    </div>
+    <CodeIsPoetry :display="query.queries.length === 0"/>
+  </Content>
 </template>
 
 <script>
   import CodeIsPoetry from '../Widget/CodeIsPoetry'
+  import {mapState} from 'vuex'
+  import MySpotQueryCodes from '../Widget/MySpotQueryCodes'
 
   export default {
     name: 'AddedQueries',
-    components: {CodeIsPoetry}
+    components: {MySpotQueryCodes, CodeIsPoetry},
+    computed: {
+      ...mapState({
+        config: state => state.db.config,
+        query: state => state.query
+      })
+    },
+    data () {
+      return {
+        activateQuery: []
+      }
+    },
+    methods: {
+      removeButtonClick (queryId) {
+        console.log(queryId)
+      }
+    }
   }
 </script>
 
@@ -20,9 +52,14 @@
     cursor: default;
   }
 
-  #hint {
-    padding: 10px;
-    width: 100%;
+  .rightPart {
+    float: right;
+    margin-right: 20px;
+    color: #aaa;
+  }
+
+  .rightPart:hover {
+    color: #000;
   }
 
 </style>

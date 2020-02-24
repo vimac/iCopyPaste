@@ -51,7 +51,7 @@ const processLimit = (limitType) => {
 
 /** Configuration **/
 
-const getExampleConfigFilename = (database, table, suffix = '.php') => {
+const getConfigurationFilename = (database, table, suffix = '.php') => {
   return 'config/myspot/' + database + '/' + table + suffix
 }
 
@@ -346,22 +346,25 @@ const getReturnTemplate = (queryType, returnType, limitType, fullDataObjectName 
 
 const dotRender = getTemplateRender('/template/MySpot/DAOFragments.dot')
 
-const generateDAOBasicVars = (queryName, queryType, database, table) => {
-  return {
+const renderMySpotDAO = (queryName, queryType, database, table, vars) => {
+  return dotRender({
     className: getDAOShortName(table),
-    queryName,
-    methodName: queryType,
-    queryType,
-    database,
-    table,
-    fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
     daoNamespace: getDAONamespace(database),
     baseDAOName: getBaseDAOName(),
-    shortBaseDAOName: getShortBaseDAOName()
-  }
+    shortBaseDAOName: getShortBaseDAOName(),
+    functions: [{
+      queryName,
+      methodName: queryType,
+      queryType,
+      database,
+      table,
+      fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
+      ...vars
+    }]
+  })
 }
 
-const generalSelect = (render, queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) => {
+const generalSelect = (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) => {
   let args = getArgsFromWhereArray(where, columns)
   args = args.concat(getArgsFromOrderArray(order))
   args = args.concat(getArgsFromLimitType(limitType))
@@ -373,15 +376,14 @@ const generalSelect = (render, queryName, queryType, database, table, columns, f
     args,
     argsType,
     required,
-    returnTemplate,
-    ...generateDAOBasicVars(queryName, queryType, database, table)
+    returnTemplate
   }
-  return render(vars)
+  return renderMySpotDAO(queryName, queryType, database, table, vars)
 }
 
 const daoGenerations = {
   select (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
-    return generalSelect(dotRender, ...arguments)
+    return generalSelect(...arguments)
   },
   selectCount (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
     let args = getArgsFromWhereArray(where, columns)
@@ -394,10 +396,9 @@ const daoGenerations = {
       args,
       argsType,
       required,
-      returnTemplate,
-      ...generateDAOBasicVars(queryName, queryType, database, table)
+      returnTemplate
     }
-    return dotRender(vars)
+    return renderMySpotDAO(queryName, queryType, database, table, vars)
   },
   insert (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
     let required = []
@@ -418,10 +419,9 @@ const daoGenerations = {
       args,
       argsType,
       required,
-      returnTemplate,
-      ...generateDAOBasicVars(queryName, queryType, database, table)
+      returnTemplate
     }
-    return dotRender(vars)
+    return renderMySpotDAO(queryName, queryType, database, table, vars)
   },
   update (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
     let updateArguments = []
@@ -454,14 +454,13 @@ const daoGenerations = {
       argsType,
       required,
       returnTemplate,
-      updateArguments,
-      ...generateDAOBasicVars(queryName, queryType, database, table)
+      updateArguments
     }
 
-    return dotRender(vars)
+    return renderMySpotDAO(queryName, queryType, database, table, vars)
   },
   delete (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {
-    return generalSelect(dotRender, ...arguments)
+    return generalSelect(...arguments)
   }
 }
 
@@ -476,10 +475,16 @@ export function generateMySpotSQL (database, table, queryType, columns, fields, 
 }
 
 export function generateMySpotConfig (database, table, queryType, fields, where, returnType, sqlTemplate) {
-  const filename = getExampleConfigFilename(database, table)
+  const filename = getConfigurationFilename(database, table)
   const configTemplateName = getConfigTemplateName(database, table)
   const joinedFields = fields.map(item => ucfirst(underscoreToCamelCase(item))).join('')
-  const whereFields = where.map(item => ucfirst(underscoreToCamelCase(item.name))).join('')
+  const whereFields = where.map(item => {
+    let result = ucfirst(underscoreToCamelCase(item.name))
+    if (item.type !== 'PLAIN') {
+      return ucfirst(item.type.toLowerCase()) + result
+    }
+    return result
+  }).join('')
   const queryName = queryType + joinedFields + (whereFields.length > 0 ? 'By' + whereFields : '')
   const dataObjectName = getDataObjectFullName(database, table)
   const configs = [{queryType, queryName, sqlTemplate, returnType, dataObjectName}]
@@ -490,7 +495,6 @@ export function generateMySpotConfig (database, table, queryType, fields, where,
   const render = getTemplateRender('/template/MySpot/MySpotConfiguration.dot')
   const configTemplate = render(vars)
   const configTemplateItem = configTemplate.match(/('\S+'\s*=>\s*\[[\s\S]+\])[\s\S]*];/m)[1]
-  console.log(configTemplateItem)
   return {configTemplate, configTemplateItem, queryName, configTemplateName, filename}
 }
 

@@ -21,9 +21,10 @@
       </MenuItem>
       <div id="informationPanel">
         <span :class="informationPanelClassname">
-          IN PROJECT:
+          <span class="progressBar"></span>
+          {{message}}
           <Icon type="ios-cube"/> {{modelList.length}}
-          <Icon type="ios-git-merge"/> {{modelList.length}}
+          <Icon type="ios-git-merge"/> {{queries.length}}
         </span>
       </div>
     </Menu>
@@ -41,7 +42,8 @@
     computed: {
       ...mapState({
         config: state => state.db.config,
-        modelList: state => state.model.modelList
+        modelList: state => state.model.modelList,
+        queries: state => state.query.queries
       })
     },
     watch: {
@@ -53,6 +55,9 @@
       },
       modelList (newModelList, oldModelList) {
         this.sendNotification()
+      },
+      queries (newQ, old) {
+        this.sendNotification()
       }
     },
     beforeMount () {
@@ -63,24 +68,27 @@
     data () {
       return {
         activatedMenu: 'project',
-        informationPanelClassname: ''
+        informationPanelClassname: '',
+        message: 'IN PROJECT: ',
+        messageHandler: null
       }
     },
     mounted () {
     },
     methods: {
       sendNotification () {
-        this.$Notice.destroy()
-        this.$Notice.success(
-          {
-            title: `Generated: ${this.modelList.length} model(s)`,
-            duration: 2,
-            onClose: () => {
-              this.informationPanelClassname = ''
-            }
-          }
-        )
+        if (this.messageHandler) {
+          this.message = 'IN PROJECT: '
+          this.informationPanelClassname = ''
+          clearTimeout(this.messageHandler)
+        }
+        this.message = 'GENERATING: '
         this.informationPanelClassname = 'highlight'
+        this.messageHandler = setTimeout(() => {
+          this.message = 'IN PROJECT: '
+          this.informationPanelClassname = ''
+          this.messageHandler = null
+        }, 1600)
       }
     }
   }

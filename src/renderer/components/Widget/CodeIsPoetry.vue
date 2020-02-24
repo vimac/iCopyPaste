@@ -8,7 +8,7 @@
   export default {
     name: 'CodeIsPoetry',
     props: {
-      display: Boolean
+      display: {default: false, type: Boolean}
     },
     computed: {
       animateClass () {

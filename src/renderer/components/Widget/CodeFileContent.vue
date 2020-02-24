@@ -9,7 +9,7 @@
 
 <script>
   import CodeHighlight from 'vue-code-highlight/src/CodeHighlight.vue'
-  import 'prism-es6/components/prism-sql'
+
   import {
     generateBaseDAOTemplate,
     generateDAOCode,
@@ -89,7 +89,7 @@
             }
             break
           }
-          case 'myspotConfiguration': {
+          case 'mySpotConfiguration': {
             const {queryType, columns, fields, where, returnType, sqlTemplateInline} = this.params
             if (columns.length > 0) {
               const {configTemplate, configTemplateItem, queryName, configTemplateName, filename} = generateMySpotConfig(this.database, this.table, queryType, fields, where, returnType, sqlTemplateInline)
@@ -98,9 +98,8 @@
             }
             break
           }
-          case 'myspotDAO': {
+          case 'mySpotDAO': {
             const {queryName, queryType, columns, fields, where, order, limitType, argsType, returnType} = this.params
-            console.log(this.params)
             if (columns.length > 0) {
               const {code, daoMethodCode} = generateDAOCode(queryName, queryType, this.database, this.table, columns, fields, where, order, limitType, argsType, returnType)
               this.code = code
@@ -108,7 +107,7 @@
             }
             break
           }
-          case 'myspotBaseDAO': {
+          case 'mySpotBaseDAO': {
             const code = generateBaseDAOTemplate()
             this.code = code
             this.$emit('on-loaded', code, {})

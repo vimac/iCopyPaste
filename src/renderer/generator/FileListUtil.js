@@ -1,4 +1,4 @@
-export const convertFileListToTree = (fileList, projectTopDirName, treeNodeFn = null) => {
+export const convertFileListToTree = (fileList, queries, projectTopDirName, treeNodeFn = null) => {
   const topLevel = {title: projectTopDirName, children: [], nodeType: 'dir'}
   treeNodeFn && treeNodeFn(topLevel)
 
@@ -23,6 +23,11 @@ export const convertFileListToTree = (fileList, projectTopDirName, treeNodeFn = 
       currentLevel = currentLevel[foundIndex].children
     })
   })
+
+  console.log(queries)
+
+  // queries.forEach((elt, index) => {
+  // })
 
   return topLevel
 }

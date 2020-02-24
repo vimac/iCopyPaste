@@ -23,13 +23,14 @@
       ...mapState({
         config: state => state.db.config,
         tables: state => state.table.tables,
-        modelList: state => state.model.modelList
+        modelList: state => state.model.modelList,
+        query: state => state.query
       }),
       metaData () {
         return this.$modelGenerator.getMetaDataByTables('myspot', this.config.database, this.modelList)
       },
       treeData () {
-        return [convertFileListToTree(this.metaData, 'MyProject', (treeNode) => {
+        return [convertFileListToTree(this.metaData, this.query.queries, 'MyProject', (treeNode) => {
           treeNode.expand = treeNode.nodeType === 'dir'
           treeNode.render = (h, {root, node, data}) => {
             return h('span', [

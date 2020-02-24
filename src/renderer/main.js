@@ -11,8 +11,11 @@ import {sequelizeBridgeInstaller} from './util/SequelizeBridge'
 import ModelGenerator from './generator/ModelGenerator'
 import {generatorInstaller} from './generator/GeneratorUtil'
 import 'view-design/dist/styles/iview.css'
-import 'vue-code-highlight/themes/prism-tomorrow.css'
 import './assets/main.css'
+import 'prism-es6/components/prism-sql'
+import 'prism-es6/components/prism-markup-templating'
+import 'prism-es6/components/prism-php'
+import 'vue-code-highlight/themes/prism-tomorrow.css'
 
 import VueCodeHighlight from 'vue-code-highlight/dist/vue-code-highlight.esm'
 

@@ -1,5 +1,5 @@
 <template>
-  <Layout id="container">
+  <Layout>
     <Button class="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
     <Sider width="250" id="sidebar" ref="sidebar" collapsible hide-trigger v-model="sidebarCollapsed"
            :collapsed-width="0">
@@ -31,9 +31,7 @@
         </CellGroup>
       </Card>
     </Sider>
-    <Layout id="workingArea">
-      <router-view/>
-    </Layout>
+    <router-view/>
   </Layout>
 </template>
 
@@ -74,10 +72,6 @@
 
 <style lang="scss" scoped>
 
-  #container {
-    background: #ccc;
-  }
-
   .ivu-card-body {
     padding: 5px 10px !important;
   }
@@ -91,10 +85,6 @@
     margin-bottom: 10px;
   }
 
-  #workingArea {
-    height: 100%;
-  }
-
   span.extra {
     color: #3a3d3f;
     font-weight: bold;
@@ -106,5 +96,8 @@
     cursor: pointer;
   }
 
+  #workingArea {
+    width: 20%;
+  }
 
 </style>
