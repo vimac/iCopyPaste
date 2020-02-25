@@ -3,7 +3,7 @@
 Use MySpot\SqlMapStatement;
 return [{{~it.configs :item:index}}
     '{{=item.queryName}}' => [
-        'sql' => '{{=item.sqlTemplate}}'{{?item.queryType === 'select'}},
+        'sql' => '{{=item.sqlTemplateInline}}'{{?item.queryType === 'select'}},
         'resultType' => {{?item.returnType === 'do' || item.returnType === 'sqlMapResult'}}{{=item.dataObjectName}}::class{{??item.returnType === 'stdClass'}}\stdClass::class{{??item.returnType === 'array' || item.returnType === 'onlyValue'}}array{{?}},
         'resultMapStyle' => SqlMapStatement::MAP_STYLE_UNDERSCORE_TO_LOWER_CAMELCASE{{?}}
     ]{{?index < it.configs.length - 1}},{{?}}{{~}}

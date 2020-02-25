@@ -478,6 +478,134 @@ const daoGenerations = {
   }
 }
 
+const renderMySpotDAONew = (database, table, functions) => {
+  return dotRender({
+    className: getDAOShortName(table),
+    daoNamespace: getDAONamespace(database),
+    baseDAOName: getBaseDAOFullName(),
+    shortBaseDAOName: getBaseDAOShortName(),
+    functions: functions.map(fnParams => {
+      const {queryType, queryName} = fnParams
+      const r = daoGenerators[queryType](database, table, fnParams)
+      return {
+        ...r,
+        fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
+        methodName: queryType
+      }
+    })
+  })
+}
+
+const selectorGenerator = (database, table, p) => {
+  const {queryName, queryType, columns, where, order, limitType, argsType, returnType} = p
+  let args = getArgsFromWhereArray(where, columns)
+  args = args.concat(getArgsFromOrderArray(order))
+  args = args.concat(getArgsFromLimitType(limitType))
+  const funcArgs = getFuncArgs(argsType, args)
+  let required = getRequiredParamsFromWhereAndLimit(where, limitType)
+  const returnTemplate = getReturnTemplate(queryType, returnType, limitType, getDataObjectFullName(database, table))
+  const vars = {
+    funcArgs,
+    args,
+    argsType,
+    required,
+    returnTemplate,
+    queryName,
+    queryType
+  }
+  return vars
+}
+
+const daoGenerators = {
+  select (database, table, p) {
+    return selectorGenerator(database, table, p)
+  },
+  selectCount (database, table, p) {
+    const {queryName, queryType, columns, where, limitType, argsType, returnType} = p
+    let args = getArgsFromWhereArray(where, columns)
+    let required = []
+    const funcArgs = getFuncArgs(argsType, args)
+    const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
+    const vars = {
+      funcArgs,
+      args,
+      argsType,
+      required,
+      returnTemplate,
+      queryName,
+      queryType
+    }
+    return vars
+  },
+  insert (database, table, p) {
+    const {queryName, queryType, columns, fields, limitType, argsType, returnType} = p
+    let required = []
+    if (argsType === 'array') {
+      required = fields
+    }
+    let args
+    if (fields.length === 0) {
+      args = getArgsFromColumns(columns)
+    } else {
+      args = getArgsFromFieldsArray(fields, columns)
+    }
+    const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
+    const funcArgs = getFuncArgs(argsType, args, database, table)
+    const vars = {
+      funcArgs,
+      args,
+      argsType,
+      required,
+      returnTemplate,
+      queryName,
+      queryType
+    }
+    return vars
+  },
+  update (database, table, p) {
+    const {queryName, queryType, columns, fields, where, order, limitType, argsType, returnType} = p
+    let updateArguments = []
+    let args = []
+    let funcArgs = []
+    if (fields.length === 0 && argsType === 'plain') {
+      updateArguments = getArgsFromColumns(columns, 'new')
+      funcArgs = getFuncArgs(argsType, updateArguments, database, table)
+    } else {
+      updateArguments = []
+      args = getArgsFromFieldsArray(fields, columns, 'new')
+    }
+
+    args = args.concat(getArgsFromWhereArray(where, columns))
+    args = args.concat(getArgsFromOrderArray(order))
+    args = args.concat(getArgsFromLimitType(limitType))
+
+    funcArgs = funcArgs.concat(getFuncArgs(argsType, args, database, table))
+    if (argsType === 'array' && fields.length === 0) {
+      funcArgs = funcArgs.concat(getFuncArgs(argsType, updateArguments, database, table, 'updateArguments'))
+    }
+
+    let required = fields.map(item => convertNameWithPrefix(item, 'new'))
+    required = required.concat(getRequiredParamsFromWhereAndLimit(where, limitType))
+    const returnTemplate = getReturnTemplate(queryType, returnType, limitType)
+
+    const vars = {
+      funcArgs,
+      args,
+      argsType,
+      required,
+      returnTemplate,
+      updateArguments,
+      queryName,
+      queryType
+    }
+
+    return vars
+  },
+  delete (database, table, p) {
+    return selectorGenerator(database, table, p)
+  }
+}
+
 /** Exports **/
 
 export function generateMySpotSQL (database, table, queryType, columns, fields, where, order, limitType) {
@@ -486,6 +614,15 @@ export function generateMySpotSQL (database, table, queryType, columns, fields, 
   const sqlTemplateInline = code.replace(/\r?\n+/g, '')
   const mixedSql = `# Expanded SQL Template \n\n${sqlTemplate}\n\n\n# Single Line SQL Template\n\n${sqlTemplateInline}`
   return {sqlTemplate, sqlTemplateInline, mixedSql}
+}
+
+export function generateMySpotConfigs (database, table, filename, configs) {
+  configs.forEach(item => {
+    item.dataObjectName = getDataObjectFullName(database, table)
+  })
+  const render = getTemplateRender('/template/MySpot/MySpotConfiguration.dot')
+  const configTemplate = render({filename, configs})
+  return {configTemplate}
 }
 
 export function generateMySpotConfig (database, table, queryType, fields, where, returnType, sqlTemplate) {
@@ -510,6 +647,11 @@ export function generateMySpotConfig (database, table, queryType, fields, where,
   const configTemplate = render(vars)
   const configTemplateItem = configTemplate.match(/('\S+'\s*=>\s*\[[\s\S]+\])[\s\S]*];/m)[1]
   return {configTemplate, configTemplateItem, queryName, configTemplateName, filename}
+}
+
+export function generateDAOsCode (database, table, functions) {
+  const code = renderMySpotDAONew(database, table, functions)
+  return {code}
 }
 
 export function generateDAOCode (queryName, queryType, database, table, columns, fields, where, order, limitType, argsType, returnType) {

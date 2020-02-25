@@ -5,8 +5,11 @@
         <Tree ref="fileTree" :data="treeData" @on-select-change="onTreeSelect"/>
       </div>
       <div slot="right">
-        <CodeFileContent language="php" :database="config.database" :table="selectedNode.meta.table"
-                         v-if="selectedNode && selectedNode.nodeType === 'file'"
+        <CodeFileContent v-if="selectedNode && selectedNode.nodeType === 'file'"
+                         language="php"
+                         :database="config.database"
+                         :table="selectedNode.meta.table"
+                         :params="selectedNode.meta.params"
                          :fileType="selectedNode.meta.fileType"/>
       </div>
     </Split>
@@ -50,13 +53,16 @@
                 ])
               }
               // treeNode['children-key'] =
-              if (treeNode.meta && treeNode.fileType === 'dataModel') {
+              if (treeNode.meta && treeNode.meta.fileType === 'dataModel') {
                 // do something wtih datamodel
               }
             } else {
-              // if (treeNode.meta && treeNode.fileType === 'dao') {
-              //
-              // }
+              if (treeNode.meta && treeNode.meta.fileType === 'mySpotConfigurations') {
+                treeNode.meta.params.configs = treeNode.meta.params.configs.concat(meta.params.configs)
+              }
+              if (treeNode.meta && treeNode.meta.fileType === 'mySpotDAOs') {
+                treeNode.meta.params.functions = treeNode.meta.params.functions.concat(meta.params.functions)
+              }
             }
           }
         )
@@ -71,7 +77,7 @@
     },
     methods: {
       onTreeSelect () {
-        this.selectedNode = this.$refs.fileTree.getSelectedNodes().pop()
+        this.selectedNode = this.$refs.fileTree.getSelectedNodes().shift()
       }
     }
   }

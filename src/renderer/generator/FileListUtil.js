@@ -5,6 +5,10 @@ export const convertFileListToTree = (fileList, queries, projectTopDirName, tree
   treeNodeFn && treeNodeFn(treeRoot, {}, {isNew: true})
 
   fileList.forEach((elt) => {
+    /**
+     * elt example:
+     * {"name":"UserDO","filename":"src/DataObject/Test/UserDO.php","fullName":"\\MyProject\\DataObject\\Test\\UserDO","table":"user","fileType":"dataModel"}
+     */
     const {filename} = elt
     addFileToTree(treeRoot.children, filename.split('/'), elt, treeNodeFn)
   })
@@ -13,12 +17,68 @@ export const convertFileListToTree = (fileList, queries, projectTopDirName, tree
     return treeRoot
   }
   const baseDAOMeta = getBaseDAOMeta()
-  addFileToTree(treeRoot.children, baseDAOMeta.filename.split('/'), {...baseDAOMeta, fileType: 'baseDAO'}, treeNodeFn)
+  addFileToTree(treeRoot.children, baseDAOMeta.filename.split('/'), {
+    ...baseDAOMeta,
+    fileType: 'mySpotBaseDAO'
+  }, treeNodeFn)
 
   queries.forEach(elt => {
+    /** example data **/
+    // const elt = {
+    //   'configurationFilename': 'config/myspot/test/comment.php',
+    //   'daoFilename': 'src/DAO/Test/CommentDAO.php',
+    //   'params': {
+    //     'argsType': 'plain',
+    //     'columns': [
+    //       {
+    //         'comment': '',
+    //         'defaultValue': null,
+    //         'extra': 'auto_increment',
+    //         'key': 'PRI',
+    //         'name': 'id',
+    //         'nullable': false,
+    //         'required': false,
+    //         'type': 'int(11)'
+    //       }
+    //     ],
+    //     'fields': [],
+    //     'limitType': 'no',
+    //     'order': [],
+    //     'queryName': 'select',
+    //     'queryType': 'select',
+    //     'returnType': 'do',
+    //     'sqlTemplate': 'SELECT * FROM `test`.`comment`',
+    //     'sqlTemplateInline': 'SELECT * FROM `test`.`comment`',
+    //     'where': []
+    //   },
+    //   'queryName': 'select',
+    //   'table': 'comment'
+    // }
     const {configurationFilename, daoFilename} = elt
-    addFileToTree(treeRoot.children, configurationFilename.split('/'), {fileType: 'mySpotConfiguration', ...elt}, treeNodeFn)
-    addFileToTree(treeRoot.children, daoFilename.split('/'), {fileType: 'mySpotDAO', ...elt}, treeNodeFn)
+    addFileToTree(
+      treeRoot.children,
+      configurationFilename.split('/'),
+      {
+        fileType: 'mySpotConfigurations',
+        params: {filename: elt.configurationFilename, configs: [elt.params]},
+        table: elt.table
+      },
+      treeNodeFn
+    )
+    addFileToTree(
+      treeRoot.children,
+      daoFilename.split('/'),
+      {
+        fileType: 'mySpotDAOs',
+        table: elt.table,
+        params: {
+          functions: [{
+            ...elt.params
+          }]
+        }
+      },
+      treeNodeFn
+    )
   })
 
   return treeRoot

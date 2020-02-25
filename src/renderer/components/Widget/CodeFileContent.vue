@@ -12,8 +12,9 @@
 
   import {
     generateBaseDAOTemplate,
-    generateDAOCode,
+    generateDAOCode, generateDAOsCode,
     generateMySpotConfig,
+    generateMySpotConfigs,
     generateMySpotSQL
   } from '../../generator/MySpotGenerator'
 
@@ -26,7 +27,6 @@
       language: String,
       fileType: String,
       params: {
-        type: Object,
         default: () => {
           return {}
         }
@@ -98,12 +98,31 @@
             }
             break
           }
+          case 'mySpotConfigurations': {
+            const {filename, configs} = this.params
+            if ((configs || []).length > 0) {
+              const {configTemplate} = generateMySpotConfigs(this.database, this.table, filename, configs)
+              this.code = configTemplate
+              this.$emit('on-loaded', configTemplate, {})
+            }
+            break
+          }
           case 'mySpotDAO': {
             const {queryName, queryType, columns, fields, where, order, limitType, argsType, returnType} = this.params
-            if (columns.length > 0) {
+            if ((columns || []).length > 0) {
               const {code, daoMethodCode} = generateDAOCode(queryName, queryType, this.database, this.table, columns, fields, where, order, limitType, argsType, returnType)
               this.code = code
               this.$emit('on-loaded', code, {daoMethodCode})
+            }
+            break
+          }
+          case 'mySpotDAOs': {
+            const {functions} = this.params
+            // const {queryName, queryType, columns, fields, where, order, limitType, argsType, returnType} = this.params
+            if ((functions || []).length > 0) {
+              const {code} = generateDAOsCode(this.database, this.table, functions)
+              this.code = code
+              this.$emit('on-loaded', code, {})
             }
             break
           }
