@@ -38,5 +38,6 @@ class {{=it.className}} extends {{=it.shortBaseDAOName}} {
         ]{{?}}{{?func.queryType === 'update' && func.argsType === 'array' && func.args.length === 0}} ,$updateArguments{{?}});
 
         {{?func.returnTemplate.returnType === 'sqlMapResult'}}return $sqlMapResult;{{??func.returnTemplate.returnType === 'lines'}}return $sqlMapResult->getAffectedLines();{{??func.returnTemplate.returnType === 'lastInsertId'}}return $sqlMapResult->getLastInsertId();{{??func.returnTemplate.returnType === 'onlyValue'}}return $sqlMapResult->fetchColumn();{{??func.returnTemplate.isArray}}return $sqlMapResult->fetchAll();{{??}}return $sqlMapResult->fetch();{{?}}
-    }{{~}}
+    }
+{{~}}
 }

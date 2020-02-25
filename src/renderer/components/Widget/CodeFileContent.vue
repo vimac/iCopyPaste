@@ -12,7 +12,7 @@
 
   import {
     generateBaseDAOTemplate,
-    generateDAOCode, generateDAOsCode,
+    generateDAOCode,
     generateMySpotConfig,
     generateMySpotConfigs,
     generateMySpotSQL
@@ -108,19 +108,15 @@
             break
           }
           case 'mySpotDAO': {
-            const {queryName, queryType, columns, fields, where, order, limitType, argsType, returnType} = this.params
-            if ((columns || []).length > 0) {
-              const {code, daoMethodCode} = generateDAOCode(queryName, queryType, this.database, this.table, columns, fields, where, order, limitType, argsType, returnType)
-              this.code = code
-              this.$emit('on-loaded', code, {daoMethodCode})
-            }
+            const {code} = generateDAOCode(this.database, this.table, [this.params])
+            this.code = code
+            this.$emit('on-loaded', code, {})
             break
           }
           case 'mySpotDAOs': {
             const {functions} = this.params
-            // const {queryName, queryType, columns, fields, where, order, limitType, argsType, returnType} = this.params
             if ((functions || []).length > 0) {
-              const {code} = generateDAOsCode(this.database, this.table, functions)
+              const {code} = generateDAOCode(this.database, this.table, functions)
               this.code = code
               this.$emit('on-loaded', code, {})
             }

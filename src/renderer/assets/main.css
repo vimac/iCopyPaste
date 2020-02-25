@@ -41,8 +41,12 @@ hr {
     display: flex;
 }
 
+#projectFilesContainer pre[class*="language-"] {
+    max-height: 100%;
+}
+
 pre[class*="language-"] {
-    margin: 0;
+    margin: 0!important;
     font-size: 11px;
     max-height: 200px;
 }
@@ -212,4 +216,8 @@ code[class*="language-"], pre[class*="language-"] {
 #queryContent {
     width: calc(100vw - 250px);
     padding: 10px;
+}
+
+#fileListViewer {
+    padding: 0 0;
 }
