@@ -52,14 +52,35 @@
 
 <script>
   import {mapActions, mapState} from 'vuex'
+  import {setWindowTitle} from '../message'
+  import {mySpotDefaults} from '../constants/defaults'
 
   export default {
     name: 'LandingPage',
     components: {},
     computed: {
-      ...mapState({config: state => state.db.config, storedList: state => state.store.storedList})
+      ...mapState({
+        config: state => state.db.config,
+        storedList: state => state.store.storedList,
+        tables: state => state.table.tables
+      })
     },
     watch: {
+      tables (newTables, oldTables) {
+        if (newTables.length === 0) {
+          this.$Message['warning'](
+            {
+              background: true,
+              content: 'Warning: no tables in the specific database'
+            }
+          )
+        }
+        this.modalInfoDisplay = false
+        this.disableForm = false
+        this.updateModels(newTables.map(item => item.name))
+        this.$router.push('/workspace/project/settings')
+        setWindowTitle(mySpotDefaults.projectName)
+      },
       config (newConfig, oldConfig) {
         if (newConfig.connected === 'error') {
           this.$Message['error'](
@@ -75,13 +96,20 @@
           if (this.saveForm) {
             this.addConnection([this.inputConfig])
           }
-          this.modalInfoDisplay = false
-          this.$router.push('/dashboard/')
+          this.$conn.fetchTables(this.inputConfig.database)
         }
-        this.disableForm = false
       }
     },
     mounted () {
+      if (this.$route.query.action && this.$route.query.action === 'disconnect') {
+        this.$conn.close()
+          .then(
+            this.submitConnectionStatus({connected: 'no', errorMessage: ''})
+          )
+          .catch(err => {
+            this.$Message.error(err.message)
+          })
+      }
       // this.doConnect() // auto connect in development env
     },
     data () {
@@ -111,7 +139,7 @@
       }
     },
     methods: {
-      ...mapActions(['submitConfig', 'submitConnectionStatus', 'addConnection', 'setConnections']),
+      ...mapActions(['submitConfig', 'submitConnectionStatus', 'addConnection', 'setConnections', 'updateModels']),
       doConnect () {
         this.modalLoading = true
         this.disableForm = true

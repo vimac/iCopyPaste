@@ -2,10 +2,18 @@
   <Form :label-width="160" id="templateForm" ref="form">
     <FormItem label="Target">
       <Select size="small" v-model="target">
-        <Option value="php+myspot">PHP + MySpot</Option>
+        <Option value="myspot">PHP + MySpot</Option>
       </Select>
     </FormItem>
-    <FormItem label="Root Namespace">
+    <FormItem label="Project Name">
+      <Input :value="settings.myspot.projectName" name="projectName" @on-blur="onTemplateChange" type="text"
+             size="small"/>
+    </FormItem>
+    <FormItem label="Project Root Dir">
+      <Input :value="settings.myspot.projectRootDir" name="projectRootDir" @on-blur="onTemplateChange" type="text"
+             size="small"/>
+    </FormItem>
+    <FormItem label="Source Root Namespace">
       <Input :value="settings.myspot.root" name="root" @on-blur="onTemplateChange" type="text" size="small"/>
     </FormItem>
     <FormItem label="Data Object Suffix">
@@ -30,54 +38,46 @@
     <FormItem>
       <Button size="small" @click="resetAll">Reset All</Button>
     </FormItem>
+    <FormItem label="Namespace Variables:">
+      <ul style="list-style: none">
+        <li><b>${root}</b> - Project Root Dir</li>
+        <li><b>${database}</b> - Connected Database Name</li>
+      </ul>
+    </FormItem>
   </Form>
 </template>
 
 <script>
   import {mapActions, mapState} from 'vuex'
+  import {mySpotDefaults} from '../../constants/defaults'
+  import {setWindowTitle} from '../../message'
 
   export default {
-    name: 'TemplateTab',
+    name: 'SettingsTemplate',
     computed: {
       ...mapState({settings: state => state.settings})
     },
     data () {
       return {
-        target: 'php+myspot'
+        target: 'myspot'
       }
     },
     methods: {
       ...mapActions(['submitSettings']),
       resetAll () {
-        this.submitSettings({
-          // eslint-disable-next-line no-template-curly-in-string
-          root: 'MyProject',
-          // eslint-disable-next-line no-template-curly-in-string
-          doSuffix: 'DO',
-          // eslint-disable-next-line no-template-curly-in-string
-          doNamespace: '${root}\\DataObject\\${database}',
-          // eslint-disable-next-line no-template-curly-in-string
-          daoSuffix: 'DAO',
-          // eslint-disable-next-line no-template-curly-in-string
-          daoNamespace: '${root}\\DAO\\${database}',
-          // eslint-disable-next-line no-template-curly-in-string
-          baseDaoNamespace: '${root}\\DAO'
-        })
+        setWindowTitle(mySpotDefaults.projectName)
+        this.submitSettings(mySpotDefaults)
       },
       onTemplateChange (event) {
         const {name, value} = event.target
-
-        /** const availableVars = ['root', 'database', 'table']
-        let result = []
-        const regVar = /\${(\w+?)}/g
-        let m = null
-        while ((m = regVar.exec(value)) !== null) {
-          result.push(m)
+        if (name === 'projectName') {
+          setWindowTitle(value)
         }
-        result.map(item => item[1]).forEach(item => {
-        }) */
-
-        this.submitSettings({[name]: value})
+        if (this.settings.myspot[name] !== value) {
+          this.submitSettings({[name]: value})
+          this.$Message.destroy()
+          this.$Message.success('Settings updated')
+        }
       }
     }
   }

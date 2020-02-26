@@ -1,7 +1,9 @@
 import store from '../store'
 import Sequelize from 'sequelize'
 
-export default {
+let sequelizeBridge = {}
+
+const sequelizeBridgeInstaller = {
   install (Vue, options) {
     let sequelize
     store.subscribe((mutation, state) => {
@@ -26,7 +28,7 @@ export default {
         }
       }
     })
-    Vue.prototype.$conn = {
+    sequelizeBridge = {
       fetchTables (database) {
         if (!sequelize) {
           return
@@ -54,57 +56,63 @@ export default {
         })
       },
       fetchColumns (database, table) {
-        if (!sequelize) {
-          return
-        }
-        sequelize.query(
-          'SELECT `COLUMN_NAME` as name, `IS_NULLABLE` as nullable, `COLUMN_TYPE` as type, `COLUMN_KEY` as `key`, `COLUMN_COMMENT` as comment, `COLUMN_DEFAULT` as defaultValue, `EXTRA` as `extra` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = $database AND `TABLE_NAME` = $table ORDER BY `ORDINAL_POSITION` ASC'
-          , {
-            bind: {database: database, table: table},
-            type: sequelize.QueryTypes.SELECT
+        return new Promise((resolve, reject) => {
+          if (!sequelize) {
+            reject(new Error('No available connections'))
+            return
           }
-        ).then(columns => {
-          let fetched = []
-          Object.keys(columns).forEach(key => {
-            let tgt = columns[key]
-            tgt.extra = tgt.extra.toLowerCase()
-            tgt.nullable = tgt.nullable !== 'NO'
-            tgt.required = !tgt.nullable && tgt.defaultValue === null && tgt.extra !== 'auto_increment'
-            fetched.push(tgt)
-          })
-          store.dispatch('fetchedColumns', fetched)
-        }).catch(err => {
-          console.warn(err)
+          sequelize.query(
+            'SELECT `COLUMN_NAME` as name, `IS_NULLABLE` as nullable, `COLUMN_TYPE` as type, `COLUMN_KEY` as `key`, `COLUMN_COMMENT` as comment, `COLUMN_DEFAULT` as defaultValue, `EXTRA` as `extra` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = $database AND `TABLE_NAME` = $table ORDER BY `ORDINAL_POSITION` ASC'
+            , {
+              bind: {database: database, table: table},
+              type: sequelize.QueryTypes.SELECT
+            }
+          ).then(columns => {
+            let fetched = []
+            Object.keys(columns).forEach(key => {
+              let tgt = columns[key]
+              tgt.extra = tgt.extra.toLowerCase()
+              tgt.nullable = tgt.nullable !== 'NO'
+              tgt.required = !tgt.nullable && tgt.defaultValue === null && tgt.extra !== 'auto_increment'
+              fetched.push(tgt)
+            })
+            resolve(fetched)
+          }).catch(reject)
         })
       },
       fetchTableDDL (database, table) {
-        if (!sequelize) {
-          return
-        }
-        sequelize.query(`SHOW CREATE TABLE \`${database}\`.\`${table}\``
-          , {
-            type: sequelize.QueryTypes.SELECT
+        return new Promise((resolve, reject) => {
+          if (!sequelize) {
+            reject(new Error('No available connections'))
+            return
           }
-        ).then(
-          (result) => {
-            let ddl = ''
-            const firstEl = result.shift()
-            Object.keys(firstEl).forEach(key => {
-              if (/create\s+table[\S\s]*\([\S\s]+\)/i.test(firstEl[key])) {
-                ddl = firstEl[key]
-              }
-            })
-            store.dispatch('fetchedDDL', ddl)
-          }
-        ).catch(
-          err => {
-            console.warn(err)
-          }
-        )
+          sequelize.query(`SHOW CREATE TABLE \`${database}\`.\`${table}\``
+            , {
+              type: sequelize.QueryTypes.SELECT
+            }
+          ).then(
+            (result) => {
+              let ddl = ''
+              const firstEl = result.shift()
+              Object.keys(firstEl).forEach(key => {
+                if (/create\s+table[\S\s]*\([\S\s]+\)/i.test(firstEl[key])) {
+                  ddl = firstEl[key]
+                }
+              })
+              resolve(ddl)
+            }
+          ).catch(reject)
+        })
       },
       close () {
         return sequelize.close()
       }
     }
+    Vue.prototype.$conn = sequelizeBridge
   }
+}
+
+export {
+  sequelizeBridgeInstaller,
+  sequelizeBridge
 }

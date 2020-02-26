@@ -1,23 +1,16 @@
 const state = {
-  tables: {},
-  selected: ''
+  tables: []
 }
 
 const mutations = {
   FETCHED_TABLES (state, payload) {
-    state.tables = Object.assign({}, state.tables, payload)
-  },
-  SELECT_TABLE (state, payload) {
-    state.selected = payload
+    state.tables = payload
   }
 }
 
 const actions = {
   fetchedTables ({commit}, payload) {
     commit('FETCHED_TABLES', payload)
-  },
-  selectTable ({commit}, payload) {
-    commit('SELECT_TABLE', payload)
   }
 }
 

@@ -1,6 +1,6 @@
 <template>
-  <Tabs>
-    <TabPane label="Reference" icon="ios-list-box-outline">
+  <Tabs v-model="activateTab">
+    <TabPane label="Reference" name="ref">
       <List size="small">
         <ListItem v-for="{name, type, nullable, key, comment} in columns" class="columnListItem" :key="name">
           <ListItemMeta>
@@ -16,30 +16,31 @@
         </ListItem>
       </List>
     </TabPane>
-    <TabPane label="Raw" icon="ios-code">
-      <CodeHighlight language="sql">{{ddl}}</CodeHighlight>
+    <TabPane label="Raw Definition" name="raw">
+      <CodeFileContent :database="this.database" :table="this.table" language="sql" fileType="ddl"/>
     </TabPane>
   </Tabs>
 </template>
 
 <script>
-  import {mapState} from 'vuex'
-  import CodeHighlight from 'vue-code-highlight/src/CodeHighlight.vue'
-  import 'prism-es6/components/prism-sql'
+  import CodeFileContent from '../Widget/CodeFileContent'
 
   export default {
     name: 'ColumnDetail',
     components: {
-      CodeHighlight
+      CodeFileContent
     },
     props: {
       database: String,
       table: String,
       columns: Array
     },
-    computed: {
-      ...mapState({ddl: state => state.column.ddl})
-    }
+    data () {
+      return {
+        activateTab: 'ref'
+      }
+    },
+    methods: {}
   }
 </script>
 

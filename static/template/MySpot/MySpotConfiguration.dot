@@ -1,10 +1,10 @@
 <?php
-// {{=it.exampleFilename}}
+// {{=it.filename}}
 Use MySpot\SqlMapStatement;
-return [
-    '{{=it.queryName}}' => [
-        'sql' => '{{=it.sqlTemplate}}'{{?it.queryType === 'select'}},
-        'resultType' => {{?it.returnType === 'do' || it.returnType === 'sqlMapResult'}}{{=it.dataObjectName}}::class{{??it.returnType === 'stdClass'}}\stdClass::class{{??it.returnType === 'array' || it.returnType === 'onlyValue'}}array{{?}},
+return [{{~it.configs :item:index}}
+    '{{=item.queryName}}' => [
+        'sql' => '{{=item.sqlTemplateInline}}'{{?item.queryType === 'select'}},
+        'resultType' => {{?item.returnType === 'do' || item.returnType === 'sqlMapResult'}}{{=item.dataObjectName}}::class{{??item.returnType === 'stdClass'}}\stdClass::class{{??item.returnType === 'array' || item.returnType === 'onlyValue'}}array{{?}},
         'resultMapStyle' => SqlMapStatement::MAP_STYLE_UNDERSCORE_TO_LOWER_CAMELCASE{{?}}
-    ],
+    ]{{?index < it.configs.length - 1}},{{?}}{{~}}
 ];

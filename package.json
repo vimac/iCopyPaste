@@ -1,6 +1,7 @@
 {
   "name": "i-copy-paste",
-  "version": "0.2.0",
+  "productName": "iCopyPaste",
+  "version": "0.6.0",
   "author": "vimac <vifix.mac@gmail.com>",
   "description": "A GUI tools to generate SQL map code & DAL code",
   "license": "MIT",
@@ -73,8 +74,10 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "deep-equal": "^2.0.1",
     "dot": "^1.1.3",
     "mysql2": "^2.1.0",
+    "node-zip": "^1.1.1",
     "sequelize": "^5.21.3",
     "view-design": "^4.1.2",
     "vue": "^2.5.16",

@@ -1,10 +1,26 @@
-pre[class*="language-"] {
-    font-size: 12px;
-    padding: .5em;
+#codePoetry {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    color: #333;
+    text-shadow: 1px 1px 0 #bbb;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    transition: right 0.2s ease, bottom 0.2s ease;
+    font-size: 8pt;
+    opacity: 0;
 }
 
-pre > code {
-    font-size: 11px;
+#codePoetry.animate {
+    opacity: 1;
+    transition: opacity 0.2s ease-in;
+}
+
+hr {
+    border-top: 1px dotted #ddd;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    margin: 5px 5px;
 }
 
 .ivu-tabs-bar {
@@ -20,8 +36,40 @@ pre > code {
     font-size: 12px;
 }
 
+#contentWrapper {
+    display: flex;
+}
+
+#fileListViewer {
+    height: 100%;
+    padding: 0;
+}
+
+#fileListViewer div {
+    height: 100%;
+}
+
+#fileListViewer pre[class*="language-"] {
+    max-height: 100%;
+    height: 100%;
+}
+
+#queryContentCodes pre[class*="language-"] {
+    height: auto;
+    max-height: inherit;
+}
+
+pre[class*="language-"] {
+    margin: 0 !important;
+    font-size: 11px;
+    max-height: 200px;
+}
+
+pre > code {
+    font-size: 11px;
+}
+
 code[class*="language-"], pre[class*="language-"] {
-    white-space: pre-wrap;
 }
 
 .ivu-card-head {
@@ -62,3 +110,143 @@ code[class*="language-"], pre[class*="language-"] {
     top: 0;
 }
 
+.sidebarTrigger {
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+    z-index: 100;
+}
+
+#informationPanel {
+    z-index: 999;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    cursor: default;
+    text-align: left;
+    color: #999;
+    float: left;
+    height: 100%;
+    margin-left: 20px;
+}
+
+#informationPanel > span {
+    position: relative;
+    padding: 3px 10px;
+    font-size: 8pt;
+    background: rgba(233, 233, 233, .2);
+    border-radius: 5px;
+    color: #ccc;
+    overflow: hidden;
+}
+
+#informationPanel > span.highlight {
+    animation: informationPanelEffects 1.5s ease-in;
+}
+
+@keyframes informationPanelEffects {
+    from {
+        color: #ccc;
+    }
+    10% {
+        color: #fff;
+    }
+    90% {
+        color: #fff;
+    }
+    to {
+        color: #ccc;
+    }
+}
+
+#informationPanel > span > span.progressBar {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    filter: blur(5px);
+    background: transparent;
+    display: none;
+    width: 0;
+}
+
+#informationPanel > span.highlight > span.progressBar {
+    display: block;
+    animation: informationPanelBlurEffects 1.5s linear;
+}
+
+@keyframes informationPanelBlurEffects {
+    from {
+        background: rgba(0, 120, 233, .3);
+        width: 0;
+    }
+    35% {
+        background: rgba(0, 120, 233, .5);
+        width: 50%;
+    }
+    70% {
+        background: rgba(0, 120, 233, .3);
+        width: 100%;
+    }
+    to {
+        background: rgba(0, 120, 233, 0);
+        width: 100%;
+    }
+}
+
+#menuRightSide {
+    height: 100%;
+    float: right;
+}
+
+#sidebar {
+    background: linear-gradient(45deg, #2B2B2B 25%, #3C3F41 0, #3C3F41 50%, #2B2B2B 0, #2B2B2B 75%, #3C3F41 0);
+    background-size: 4.2px 4.2px;
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#sidebar .ivu-menu-dark {
+    background: transparent;
+}
+
+#sidebar .ivu-menu-dark.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
+    background: rgba(18, 18, 26, 0.3);
+}
+
+.sideCard {
+    margin: 0 10px 0;
+}
+
+.filterPanel {
+    padding: 6px 10px 4px;
+}
+
+.ivu-split-pane {
+    overflow-x: auto;
+}
+
+#modelsContent {
+    padding: 10px;
+}
+
+#queryContent {
+    width: calc(100vw - 250px);
+    padding: 10px;
+}
+
+.codeFilePanel {
+    position: relative;
+}
+
+.codeCopy {
+    position: absolute;
+    right: 10px;
+    top: 14px;
+    z-index: 999;
+}
+
+.codeCopy button {
+    font-size: 12px;
+}

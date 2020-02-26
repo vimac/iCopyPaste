@@ -2,18 +2,18 @@
   <div>
     <Tabs>
       <TabPane label="Template" name="template">
-        <TemplateTab/>
+        <SettingsTemplate/>
       </TabPane>
     </Tabs>
   </div>
 </template>
 
 <script>
-  import TemplateTab from './TemplateTab'
+  import SettingsTemplate from './SettingsTemplate'
 
   export default {
-    name: 'SettingsDialog',
-    components: {TemplateTab}
+    name: 'ProjectSettings',
+    components: {SettingsTemplate}
   }
 </script>
 
