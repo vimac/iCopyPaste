@@ -54,6 +54,11 @@ hr {
     height: 100%;
 }
 
+#queryContentCodes pre[class*="language-"] {
+    height: auto;
+    max-height: inherit;
+}
+
 pre[class*="language-"] {
     margin: 0 !important;
     font-size: 11px;
@@ -236,10 +241,10 @@ code[class*="language-"], pre[class*="language-"] {
 }
 
 .codeCopy {
-  position: absolute;
-  right: 10px;
-  top: 14px;
-  z-index: 999;
+    position: absolute;
+    right: 10px;
+    top: 14px;
+    z-index: 999;
 }
 
 .codeCopy button {

@@ -71,8 +71,9 @@
         </RadioGroup>
       </FormItem>
     </Form>
-    <div>
+    <div id="queryContentCodes">
       <MySpotQueryCodes :database="config.database" :table="table" :params="mySpotQueryCodeParams"
+                        @on-updated-sql-template="onUpdatedSqlTemplate"
                         @on-updated-configuration="onUpdatedConfiguration"/>
     </div>
   </Content>
@@ -161,6 +162,10 @@
     },
     methods: {
       ...(mapActions(['addQuery'])),
+      onUpdatedSqlTemplate (code, payload) {
+        const {sqlTemplateInline} = payload
+        this.sqlTemplateInline = sqlTemplateInline
+      },
       onUpdatedConfiguration (code, payload) {
         const {queryName} = payload
         this.queryName = queryName
@@ -169,7 +174,7 @@
         const q = {
           queryName: this.queryName,
           table: this.table,
-          params: this.mySpotQueryCodeParams
+          params: {queryName: this.queryName, sqlTemplateInline: this.sqlTemplateInline, ...this.mySpotQueryCodeParams}
         }
         if (this.query.queries.filter(item => equal(item, q)).length > 0) {
           this.$Message.destroy()
