@@ -1,7 +1,7 @@
 {
   "name": "i-copy-paste",
   "productName": "iCopyPaste",
-  "version": "0.3.0",
+  "version": "0.6.0",
   "author": "vimac <vifix.mac@gmail.com>",
   "description": "A GUI tools to generate SQL map code & DAL code",
   "license": "MIT",
