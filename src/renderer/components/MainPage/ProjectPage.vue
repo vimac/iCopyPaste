@@ -3,7 +3,7 @@
     <Button class="sidebarTrigger" shape="circle" icon="ios-menu" @click="sidebarCollapseSwitch"></Button>
     <Sider ref="sidebar" width="150" id="sidebar" v-model="sidebarCollapsed" collapsible :collapsed-width="78"
            hide-trigger>
-      <Menu ref="menu" width="auto" theme="dark" :active-name="activateMenu" :class="menuitemClasses"
+      <Menu ref="menu" width="auto" theme="dark" :activeName="activateMenu" :class="menuitemClasses"
             @on-select="onMenuSelect">
         <MenuItem name="files" to="/workspace/project/files">
           <Icon type="ios-briefcase"/>
@@ -52,13 +52,11 @@
     data () {
       return {
         activateMenu: 'settings',
-        sidebarCollapsed: false,
-        buttonLocation: '/workspace/project/files'
+        sidebarCollapsed: false
       }
     },
     watch: {
       $route (newRoute, old) {
-        this.buttonLocation = newRoute.fullPath
       }
     },
     methods: {
@@ -116,7 +114,7 @@
               {name: 'All Files', extensions: ['*']}
             ]
           })
-          convertZipArchive(
+          filename && convertZipArchive(
             filename,
             this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.db.config.database, this.model.models),
             getQueryMeta(this.db.config.database, this.query.queries),
@@ -128,7 +126,6 @@
             this.$Message.error(e.message)
           })
         }
-        return name
       }
     }
   }

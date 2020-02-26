@@ -57,6 +57,7 @@ export const fileContentGenerator = {
     })
   },
   mySpotDAO (database, table, params) {
+    console.log('test', params)
     return new Promise((resolve, reject) => {
       try {
         const {code} = generateDAOCode(database, table, [params])

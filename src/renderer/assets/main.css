@@ -230,3 +230,18 @@ code[class*="language-"], pre[class*="language-"] {
     width: calc(100vw - 250px);
     padding: 10px;
 }
+
+.codeFilePanel {
+    position: relative;
+}
+
+.codeCopy {
+  position: absolute;
+  right: 10px;
+  top: 14px;
+  z-index: 999;
+}
+
+.codeCopy button {
+    font-size: 12px;
+}

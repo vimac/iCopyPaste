@@ -361,21 +361,27 @@ const getReturnTemplate = (queryType, returnType, limitType, fullDataObjectName 
 const dotRender = getTemplateRender('/template/MySpot/DAOFragments.dot')
 
 const renderMySpotDAO = (database, table, functions) => {
-  return dotRender({
+  const vars = {
     className: getDAOShortName(table),
     daoNamespace: getDAONamespace(database),
     baseDAOName: getBaseDAOFullName(),
     shortBaseDAOName: getBaseDAOShortName(),
     functions: functions.map(fnParams => {
       const {queryType, queryName} = fnParams
+      console.log('test333', fnParams, queryName, 'hello')
       const r = daoGenerators[queryType](database, table, fnParams)
-      return {
+      console.log('test555', r)
+      const fn = {
         ...r,
         fullQueryName: getConfigTemplateNameWithQueryName(database, table, queryName),
         methodName: queryType
       }
+      console.log('test444', fn)
+      return fn
     })
-  })
+  }
+  console.log('test2', vars)
+  return dotRender(vars)
 }
 
 const generateGeneralSelectQuery = (database, table, p) => {

@@ -72,56 +72,6 @@
       </FormItem>
     </Form>
     <div>
-      <!--      <Tabs ref="tab">-->
-      <!--        <TabPane label="SQL Template" class="codeTab">-->
-      <!--          <ButtonGroup class="copyCode">-->
-      <!--            <Button @click="onCopyExpanded" size="small" icon="ios-copy-outline">Expanded</Button>-->
-      <!--            <Button @click="onCopySingleLine" size="small" icon="ios-copy-outline">Single line</Button>-->
-      <!--          </ButtonGroup>-->
-      <!--          <CodeFileContent language="sql"-->
-      <!--                           fileType="sql"-->
-      <!--                           :database="config.database"-->
-      <!--                           :table="table"-->
-      <!--                           :params="{queryType, columns, fields, where, order, limitType}"-->
-      <!--                           @on-loaded="onSqlTemplateLoaded"-->
-      <!--          />-->
-      <!--        </TabPane>-->
-      <!--        <TabPane label="Config" class="codeTab">-->
-      <!--          <ButtonGroup class="copyCode">-->
-      <!--            <Button @click="onCopyConfig" size="small" icon="ios-copy-outline">Whole file</Button>-->
-      <!--            <Button @click="onCopyConfigItem" size="small" icon="ios-copy-outline">Single item</Button>-->
-      <!--          </ButtonGroup>-->
-      <!--          <CodeFileContent language="sql"-->
-      <!--                           fileType="sql"-->
-      <!--                           :database="config.database"-->
-      <!--                           :table="table"-->
-      <!--                           :params="{queryType, columns, fields, where, order, limitType}"-->
-      <!--                           @on-loaded="onSqlTemplateLoaded"-->
-      <!--          />-->
-      <!--        </TabPane>-->
-      <!--        <TabPane label="DAO" class="codeTab">-->
-      <!--          <ButtonGroup class="copyCode">-->
-      <!--            <Button @click="onCopyDAO" size="small" icon="ios-copy-outline">Class</Button>-->
-      <!--            <Button @click="onCopyDAOMethod" size="small" icon="ios-copy-outline">Method</Button>-->
-      <!--          </ButtonGroup>-->
-      <!--          <CodeFileContent language="php"-->
-      <!--                           fileType="myspotDAO"-->
-      <!--                           :database="config.database"-->
-      <!--                           :table="table"-->
-      <!--                           :params="{queryName, queryType, columns, fields, where, order, limitType, argsType, returnType}"-->
-      <!--          />-->
-
-      <!--        </TabPane>-->
-      <!--        <TabPane label="BaseDAO" class="codeTab">-->
-      <!--          <ButtonGroup class="copyCode">-->
-      <!--            <Button @click="onCopyBaseDAO" size="small" icon="ios-copy-outline">BaseDAO</Button>-->
-      <!--          </ButtonGroup>-->
-      <!--          <CodeFileContent language="php"-->
-      <!--                           fileType="myspotBaseDAO"-->
-      <!--                           :params="{}"-->
-      <!--          />-->
-      <!--        </TabPane>-->
-      <!--      </Tabs>-->
       <MySpotQueryCodes :database="config.database" :table="table" :params="mySpotQueryCodeParams"
                         @on-updated-configuration="onUpdatedConfiguration"/>
     </div>
@@ -227,34 +177,6 @@
           return
         }
         this.addQuery(q)
-      },
-      onCopyExpanded () {
-        require('electron').clipboard.writeText(this.sqlTemplate)
-        this.$Message.info('Expanded SQL template copied to clipboard')
-      },
-      onCopySingleLine () {
-        require('electron').clipboard.writeText(this.sqlTemplateInline)
-        this.$Message.info('Single line SQL template copied to clipboard')
-      },
-      onCopyConfig () {
-        require('electron').clipboard.writeText(this.configTemplate)
-        this.$Message.info('Configuration template copied to clipboard')
-      },
-      onCopyConfigItem () {
-        require('electron').clipboard.writeText(this.configTemplateItem)
-        this.$Message.info('Single configuration item copied to clipboard')
-      },
-      onCopyDAO () {
-        require('electron').clipboard.writeText(this.daoCode)
-        this.$Message.info('DAO class code copied to clipboard')
-      },
-      onCopyDAOMethod () {
-        require('electron').clipboard.writeText(this.daoMethodCode)
-        this.$Message.info('DAO method copied to clipboard')
-      },
-      onCopyBaseDAO () {
-        require('electron').clipboard.writeText(this.baseDAOCode)
-        this.$Message.info('BaseDAO code copied to clipboard')
       },
       loadColumns () {
         return new Promise((resolve, reject) => {

@@ -1,9 +1,14 @@
 <template>
-  <div>
+  <div class="codeFilePanel">
     <Spin v-if="spinLoading">
       <Icon type="ios-loading" size=80 class="spinLoading"></Icon>
     </Spin>
     <CodeHighlight v-else :language="language">{{code}}</CodeHighlight>
+    <ButtonGroup class="codeCopy">
+      <slot name="copyButtons">
+        <Button @click="btnClick" size="small" icon="ios-copy-outline"/>
+      </slot>
+    </ButtonGroup>
   </div>
 </template>
 
@@ -60,6 +65,10 @@
             this.spinLoading = false
             this.$Message.error(err.message)
           })
+      },
+      btnClick () {
+        require('electron').clipboard.writeText(this.code)
+        this.$Message.info('Code copied')
       }
     }
   }
