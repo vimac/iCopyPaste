@@ -1,10 +1,10 @@
 const state = {
-  modelList: []
+  models: []
 }
 
 const mutations = {
   UPDATE_MODELS (state, payload) {
-    state.modelList = payload
+    state.models = payload
   }
 }
 

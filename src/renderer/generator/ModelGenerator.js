@@ -50,10 +50,10 @@ const dataModelGenerators = {
   }
 }
 
-export default {
-  install (Vue, options) {
-    let modelGenerator
+let modelGenerator
 
+const modelGeneratorInstaller = {
+  install (Vue, options) {
     modelGenerator = {
       getDataObjectMetaDataByTables (type, database, tables) {
         return tables.map(table => getDataModelMeta[type](database, table))
@@ -65,4 +65,9 @@ export default {
 
     Vue.prototype.$modelGenerator = modelGenerator
   }
+}
+
+export {
+  modelGeneratorInstaller,
+  modelGenerator
 }

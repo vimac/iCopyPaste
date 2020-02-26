@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Collapse accordion simple v-model="activateModel">
+    <Collapse accordion simple v-model="activateModel" v-if="models.length > 0">
       <Panel v-for="item in metaData" :name="item.table" hide-arrow>
         <Icon type="ios-list-box-outline"/>
         {{item.fullName}}
@@ -12,8 +12,9 @@
           />
         </template>
       </Panel>
-      <CodeIsPoetry :display="modelList.length === 0"/>
     </Collapse>
+    <div v-else>Select a table on the left to start</div>
+    <CodeIsPoetry :display="models.length === 0"/>
   </div>
 </template>
 
@@ -34,10 +35,10 @@
       ...mapState({
         config: state => state.db.config,
         tables: state => state.table.tables,
-        modelList: state => state.model.modelList
+        models: state => state.model.models
       }),
       metaData () {
-        return this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.config.database, this.modelList)
+        return this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.config.database, this.models)
       }
     },
     data () {

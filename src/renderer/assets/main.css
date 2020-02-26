@@ -15,7 +15,6 @@
     transition: opacity 0.2s ease-in;
 }
 
-
 hr {
     border-top: 1px dotted #ddd;
     border-bottom: 0;
@@ -41,12 +40,12 @@ hr {
     display: flex;
 }
 
-#fileListViewer{
+#fileListViewer {
     height: 100%;
     padding: 0;
 }
 
-#fileListViewer div{
+#fileListViewer div {
     height: 100%;
 }
 
@@ -56,7 +55,7 @@ hr {
 }
 
 pre[class*="language-"] {
-    margin: 0!important;
+    margin: 0 !important;
     font-size: 11px;
     max-height: 200px;
 }
@@ -221,6 +220,10 @@ code[class*="language-"], pre[class*="language-"] {
 
 .ivu-split-pane {
     overflow-x: auto;
+}
+
+#modelsContent {
+    padding: 10px;
 }
 
 #queryContent {

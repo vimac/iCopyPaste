@@ -27,19 +27,20 @@
     components: {CodeFileContent},
     computed: {
       ...mapState({
+        settings: state => state.settings,
         config: state => state.db.config,
         tables: state => state.table.tables,
-        modelList: state => state.model.modelList,
+        models: state => state.model.models,
         query: state => state.query
       }),
       metaData () {
-        return this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.config.database, this.modelList)
+        return this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.config.database, this.models)
       },
       treeData () {
         return [convertFileListToTree(
           this.metaData,
           getQueryMeta(this.config.database, this.query.queries),
-          'MyProject',
+          this.settings.myspot.projectRootDir,
           (treeNode, meta, {isNew}) => {
             if (isNew) {
               treeNode.expand = treeNode.nodeType === 'dir'
@@ -52,7 +53,6 @@
                   data.title
                 ])
               }
-              // treeNode['children-key'] =
               if (treeNode.meta && treeNode.meta.fileType === 'dataModel') {
                 // do something wtih datamodel
               }

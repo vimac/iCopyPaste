@@ -1,20 +1,25 @@
 import {mySpotDefaults} from '../../constants/defaults'
 
 const state = {
-  target: 'php+myspot',
+  target: 'myspot',
   myspot: mySpotDefaults
 }
 
 const mutations = {
   SUBMIT_SETTINGS (state, payload) {
     state.myspot = Object.assign({}, state.myspot, payload)
+  },
+  LOAD_ALL_SETTINGS (state, payload) {
+    state = Object.assign(state, payload)
   }
 }
 
 const actions = {
   submitSettings ({commit}, payload) {
-    console.log()
     commit('SUBMIT_SETTINGS', payload)
+  },
+  loadAllSettings ({commit}, payload) {
+    commit('LOAD_ALL_SETTINGS', payload)
   }
 }
 

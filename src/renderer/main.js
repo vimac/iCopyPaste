@@ -8,7 +8,7 @@ import store from './store'
 import ViewUI from 'view-design'
 import enUS from 'view-design/dist/locale/en-US'
 import {sequelizeBridgeInstaller} from './util/SequelizeBridge'
-import ModelGenerator from './generator/ModelGenerator'
+import {modelGeneratorInstaller} from './generator/ModelGenerator'
 import {generatorInstaller} from './generator/GeneratorUtil'
 import 'view-design/dist/styles/iview.css'
 import './assets/main.css'
@@ -26,7 +26,7 @@ Vue.config.productionTip = false
 Vue.use(ViewUI, {locale: enUS})
 Vue.use(sequelizeBridgeInstaller)
 Vue.use(VueCodeHighlight)
-Vue.use(ModelGenerator)
+Vue.use(modelGeneratorInstaller)
 Vue.use(generatorInstaller)
 
 /* eslint-disable no-new */

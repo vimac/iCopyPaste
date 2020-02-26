@@ -23,7 +23,7 @@
         <span :class="informationPanelClassname">
           <span class="progressBar"></span>
           {{message}}
-          <Icon type="ios-cube"/> {{modelList.length}}
+          <Icon type="ios-cube"/> {{models.length}}
           <Icon type="ios-git-merge"/> {{queries.length}}
         </span>
       </div>
@@ -42,7 +42,7 @@
     computed: {
       ...mapState({
         config: state => state.db.config,
-        modelList: state => state.model.modelList,
+        models: state => state.model.models,
         queries: state => state.query.queries
       })
     },
@@ -53,7 +53,7 @@
           this.activatedMenu = r.pop()
         }
       },
-      modelList (newModelList, oldModelList) {
+      models (newM, old) {
         this.sendNotification()
       },
       queries (newQ, old) {

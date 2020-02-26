@@ -502,7 +502,7 @@ export function generateMySpotConfigs (database, table, filename, configs) {
   return {configTemplate}
 }
 
-export function generateMySpotConfig (database, table, queryType, fields, where, returnType, sqlTemplate) {
+export function generateMySpotConfig (database, table, queryType, fields, where, returnType, sqlTemplateInline) {
   const filename = getConfigurationFilename(database, table)
   const configTemplateName = getConfigTemplateName(database, table)
   const joinedFields = fields.map(item => ucfirst(underscoreToCamelCase(item))).join('')
@@ -515,7 +515,7 @@ export function generateMySpotConfig (database, table, queryType, fields, where,
   }).join('')
   const queryName = queryType + joinedFields + (whereFields.length > 0 ? 'By' + whereFields : '')
   const dataObjectName = getDataObjectFullName(database, table)
-  const configs = [{queryType, queryName, sqlTemplate, returnType, dataObjectName}]
+  const configs = [{queryType, queryName, sqlTemplateInline, returnType, dataObjectName}]
   const vars = {
     configs,
     filename

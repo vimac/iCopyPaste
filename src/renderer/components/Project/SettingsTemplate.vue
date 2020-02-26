@@ -2,7 +2,7 @@
   <Form :label-width="160" id="templateForm" ref="form">
     <FormItem label="Target">
       <Select size="small" v-model="target">
-        <Option value="php+myspot">PHP + MySpot</Option>
+        <Option value="myspot">PHP + MySpot</Option>
       </Select>
     </FormItem>
     <FormItem label="Project Name">
@@ -59,7 +59,7 @@
     },
     data () {
       return {
-        target: 'php+myspot'
+        target: 'myspot'
       }
     },
     methods: {

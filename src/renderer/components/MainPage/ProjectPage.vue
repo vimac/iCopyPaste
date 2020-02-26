@@ -34,9 +34,12 @@
 </template>
 
 <script>
+  import {mapActions, mapState} from 'vuex'
+
   export default {
     name: 'ProjectPage',
     computed: {
+      ...mapState(['model', 'settings', 'query']),
       menuitemClasses () {
         return [
           'menuItem',
@@ -57,20 +60,61 @@
       }
     },
     methods: {
+      ...mapActions(['updateModels', 'updateQueries', 'loadAllSettings']),
       sidebarCollapseSwitch () {
         this.$refs.sidebar.toggleCollapse()
       },
       onMenuSelect (name) {
         const {dialog} = require('electron').remote
-        if (name === 'saveProject') {
-          dialog.showSaveDialog({
+        if (name === 'openProject') {
+          const filename = dialog.showOpenDialog({
             filters: [
               {name: 'iCopyPaste Project', extensions: ['icpproj']},
               {name: 'All Files', extensions: ['*']}
             ]
           })
+          filename && require('fs').readFile(filename.shift(), (err, buffer) => {
+            if (err) {
+              this.$Message.error(err.message)
+            }
+            try {
+              const data = JSON.parse(buffer)
+              const {models, queries, settings} = data
+              models && this.updateModels(models)
+              queries && this.updateQueries(queries)
+              settings && this.loadAllSettings(settings)
+              this.$Message.success('Project loaded')
+            } catch (e) {
+              this.$Message.error(e.message)
+            }
+          })
+        } else if (name === 'saveProject') {
+          const filename = dialog.showSaveDialog({
+            filters: [
+              {name: 'iCopyPaste Project', extensions: ['icpproj']},
+              {name: 'All Files', extensions: ['*']}
+            ]
+          })
+          const projectFileContent = {
+            models: this.model.models,
+            queries: this.query.queries,
+            settings: this.settings
+          }
+          filename && require('fs').writeFile(filename, JSON.stringify(projectFileContent), (err) => {
+            if (err) {
+              this.$Message.error(err.message)
+              return
+            }
+            this.$Message.success('Project saved')
+          })
         } else if (name === 'exportGenerated') {
-          // do nothing
+          const filename = dialog.showSaveDialog({
+            filters: [
+              {name: 'Zip Archive', extensions: ['zip']},
+              {name: 'All Files', extensions: ['*']}
+            ]
+          })
+          console.log(filename)
         }
         return name
       }

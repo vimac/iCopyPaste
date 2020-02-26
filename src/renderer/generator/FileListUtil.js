@@ -1,10 +1,15 @@
 import {getBaseDAOMeta} from './MySpotGenerator'
 
-export const convertFileListToTree = (fileList, queries, projectTopDirName, treeNodeFn = null) => {
+export const convertZipArchive = (models, queries, projectTopDirName, treeNodeFn = null) => {
+  const nodes = convertFileListToTree(models, queries, projectTopDirName, treeNodeFn)
+  return nodes
+}
+
+export const convertFileListToTree = (models, queries, projectTopDirName, treeNodeFn = null) => {
   const treeRoot = {title: projectTopDirName, children: [], nodeType: 'dir'}
   treeNodeFn && treeNodeFn(treeRoot, {}, {isNew: true})
 
-  fileList.forEach((elt) => {
+  models.forEach((elt) => {
     /**
      * elt example:
      * {"name":"UserDO","filename":"src/DataObject/Test/UserDO.php","fullName":"\\MyProject\\DataObject\\Test\\UserDO","table":"user","fileType":"dataModel"}
@@ -24,36 +29,38 @@ export const convertFileListToTree = (fileList, queries, projectTopDirName, tree
 
   queries.forEach(elt => {
     /** example data **/
-    // const elt = {
-    //   'configurationFilename': 'config/myspot/test/comment.php',
-    //   'daoFilename': 'src/DAO/Test/CommentDAO.php',
-    //   'params': {
-    //     'argsType': 'plain',
-    //     'columns': [
-    //       {
-    //         'comment': '',
-    //         'defaultValue': null,
-    //         'extra': 'auto_increment',
-    //         'key': 'PRI',
-    //         'name': 'id',
-    //         'nullable': false,
-    //         'required': false,
-    //         'type': 'int(11)'
-    //       }
-    //     ],
-    //     'fields': [],
-    //     'limitType': 'no',
-    //     'order': [],
-    //     'queryName': 'select',
-    //     'queryType': 'select',
-    //     'returnType': 'do',
-    //     'sqlTemplate': 'SELECT * FROM `test`.`comment`',
-    //     'sqlTemplateInline': 'SELECT * FROM `test`.`comment`',
-    //     'where': []
-    //   },
-    //   'queryName': 'select',
-    //   'table': 'comment'
-    // }
+    /**
+     const elt = {
+       'configurationFilename': 'config/myspot/test/comment.php',
+       'daoFilename': 'src/DAO/Test/CommentDAO.php',
+       'params': {
+         'argsType': 'plain',
+         'columns': [
+           {
+             'comment': '',
+             'defaultValue': null,
+             'extra': 'auto_increment',
+             'key': 'PRI',
+             'name': 'id',
+             'nullable': false,
+             'required': false,
+             'type': 'int(11)'
+           }
+         ],
+         'fields': [],
+         'limitType': 'no',
+         'order': [],
+         'queryName': 'select',
+         'queryType': 'select',
+         'returnType': 'do',
+         'sqlTemplate': 'SELECT * FROM `test`.`comment`',
+         'sqlTemplateInline': 'SELECT * FROM `test`.`comment`',
+         'where': []
+       },
+       'queryName': 'select',
+       'table': 'comment'
+     }
+     */
     const {configurationFilename, daoFilename} = elt
     addFileToTree(
       treeRoot.children,

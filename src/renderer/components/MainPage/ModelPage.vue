@@ -27,7 +27,7 @@
         </CellGroup>
       </Card>
     </Sider>
-    <Content>
+    <Content id="modelsContent">
       <ModelList />
     </Content>
   </Layout>
@@ -43,11 +43,11 @@
     computed: {
       ...mapState({
         tables: state => state.table.tables,
-        modelList: state => state.model.modelList
+        models: state => state.model.models
       }),
       enableAllModels: {
         get () {
-          return this.modelList.length === this.tables.length
+          return this.models.length === this.tables.length
         },
         set (value) {
           if (value) {
@@ -58,7 +58,7 @@
         }
       },
       selectedModels () {
-        return this.modelList.reduce((sum, item) => {
+        return this.models.reduce((sum, item) => {
           sum[item] = true
           return sum
         }, {})
@@ -77,11 +77,11 @@
         this.$refs.sidebar.toggleCollapse()
       },
       toggleModel (name) {
-        const index = this.modelList.indexOf(name)
+        const index = this.models.indexOf(name)
         if (index > -1) {
-          this.updateModels(this.modelList.filter((val) => name !== val))
+          this.updateModels(this.models.filter((val) => name !== val))
         } else {
-          this.updateModels([...this.modelList, name])
+          this.updateModels([...this.models, name])
         }
       }
     }
