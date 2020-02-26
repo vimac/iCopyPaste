@@ -19,7 +19,7 @@ export const fileContentGenerator = {
   dataModel (database, table) {
     return new Promise((resolve, reject) => {
       sequelizeBridge.fetchColumns(database, table).then(fetchedColumns => {
-        resolve({code: modelGenerator.getDataModelByTable('myspot', database, table, fetchedColumns), payload: {}})
+        resolve({code: modelGenerator.getDataModelByTable('myspot', database, table, fetchedColumns), payload: {fetchedColumns}})
       }).catch(reject)
     })
   },
@@ -57,7 +57,6 @@ export const fileContentGenerator = {
     })
   },
   mySpotDAO (database, table, params) {
-    console.log('test', params)
     return new Promise((resolve, reject) => {
       try {
         const {code} = generateDAOCode(database, table, [params])

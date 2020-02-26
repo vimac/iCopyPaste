@@ -135,7 +135,7 @@
         this.copy(this.params.sqlTemplateInline, 'Single configuration item copied to clipboard')
       },
       onCopyConfig () {
-        this.copy(this.configTemplate, 'Expanded SQL template copied to clipboard')
+        this.copy(this.configTemplate, 'Whole configuration template copied to clipboard')
       },
       onCopyConfigItem () {
         this.copy(this.configTemplateItem, 'Single configuration item copied to clipboard')

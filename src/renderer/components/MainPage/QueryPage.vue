@@ -59,7 +59,6 @@
       }
       const {database} = this.config
       this.$conn.fetchTables(database) */
-      console.log(this.$route.fullPath)
     },
     methods: {
       ...mapActions(['submitConnectionStatus']),
