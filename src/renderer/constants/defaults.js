@@ -1,6 +1,8 @@
-export const projectName = 'My Awesome Project'
-export const projectRootDir = 'MyAwesomeProject'
+const projectName = 'My Awesome Project'
+const projectRootDir = 'MyAwesomeProject'
 export const mySpotDefaults = {
+  projectName,
+  projectRootDir,
   // eslint-disable-next-line no-template-curly-in-string
   root: 'MyProject',
   // eslint-disable-next-line no-template-curly-in-string

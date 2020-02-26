@@ -13,6 +13,10 @@
           <Icon type="ios-construct"/>
           <span>Settings</span>
         </MenuItem>
+        <MenuItem name="openProject">
+          <Icon type="md-open"/>
+          <span>Load</span>
+        </MenuItem>
         <MenuItem name="saveProject">
           <Icon type="md-archive"/>
           <span>Save</span>
@@ -42,7 +46,7 @@
     },
     data () {
       return {
-        activateMenu: 'files',
+        activateMenu: 'settings',
         sidebarCollapsed: false,
         buttonLocation: '/workspace/project/files'
       }

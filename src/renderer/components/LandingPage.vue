@@ -52,6 +52,8 @@
 
 <script>
   import {mapActions, mapState} from 'vuex'
+  import {setWindowTitle} from '../message'
+  import {mySpotDefaults} from '../constants/defaults'
 
   export default {
     name: 'LandingPage',
@@ -76,7 +78,8 @@
         this.modalInfoDisplay = false
         this.disableForm = false
         this.updateModels(newTables.map(item => item.name))
-        this.$router.push('/workspace/query')
+        this.$router.push('/workspace/project/settings')
+        setWindowTitle(mySpotDefaults.projectName)
       },
       config (newConfig, oldConfig) {
         if (newConfig.connected === 'error') {

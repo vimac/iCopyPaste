@@ -4,15 +4,13 @@
       <div slot="left">
         <Tree ref="fileTree" :data="treeData" @on-select-change="onTreeSelect"/>
       </div>
-      <div slot="right">
-        <div id="fileListViewer">
-          <CodeFileContent v-if="selectedNode && selectedNode.nodeType === 'file'"
-                           language="php"
-                           :database="config.database"
-                           :table="selectedNode.meta.table"
-                           :params="selectedNode.meta.params"
-                           :fileType="selectedNode.meta.fileType"/>
-        </div>
+      <div slot="right" id="fileListViewer">
+        <CodeFileContent v-if="selectedNode && selectedNode.nodeType === 'file'"
+                         language="php"
+                         :database="config.database"
+                         :table="selectedNode.meta.table"
+                         :params="selectedNode.meta.params"
+                         :fileType="selectedNode.meta.fileType"/>
       </div>
     </Split>
   </div>

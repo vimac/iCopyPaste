@@ -62,6 +62,14 @@ function createWindow () {
   })
 
   // mainWindow.webContents.openDevTools()
+
+  const {ipcMain} = require('electron')
+  ipcMain.on('set-window-title', (ev, arg) => {
+    console.log(arg)
+    const {app} = require('electron')
+    const name = (app.getName() === 'Electron') ? 'iCopyPaste' : app.getName()
+    mainWindow.setTitle(name + ' - ' + arg)
+  })
 }
 
 app.on('ready', createWindow)

@@ -13,6 +13,7 @@ const mutations = {
 
 const actions = {
   submitSettings ({commit}, payload) {
+    console.log()
     commit('SUBMIT_SETTINGS', payload)
   }
 }
