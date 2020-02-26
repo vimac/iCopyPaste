@@ -11,23 +11,23 @@ export const convertZipArchive = (zipFilename, models, queries, database, projec
   queries.forEach(q => {
     if (fileList[q.configurationFilename]) {
       fileList[q.configurationFilename].params.configs.push(q.params)
-      return
+    } else {
+      fileList[q.configurationFilename] = {
+        filename: q.configurationFilename,
+        fileType: 'mySpotConfigurations',
+        params: {filename: q.configurationFilename, configs: [q.params]},
+        table: q.table
+      }
     }
     if (fileList[q.daoFilename]) {
       fileList[q.daoFilename].params.functions.push(q.params)
-      return
-    }
-    fileList[q.configurationFilename] = {
-      filename: q.configurationFilename,
-      fileType: 'mySpotConfigurations',
-      params: {filename: q.configurationFilename, configs: [q.params]},
-      table: q.table
-    }
-    fileList[q.daoFilename] = {
-      filename: q.daoFilename,
-      fileType: 'mySpotDAOs',
-      params: {functions: [q.params]},
-      table: q.table
+    } else {
+      fileList[q.daoFilename] = {
+        filename: q.daoFilename,
+        fileType: 'mySpotDAOs',
+        params: {functions: [q.params]},
+        table: q.table
+      }
     }
   })
   models.forEach(m => {
