@@ -1,8 +1,66 @@
 import {getBaseDAOMeta} from './MySpotGenerator'
+import {fileContentGenerator} from './FileContentGenerator'
+import Zip from 'node-zip'
 
-export const convertZipArchive = (models, queries, projectTopDirName, treeNodeFn = null) => {
-  const nodes = convertFileListToTree(models, queries, projectTopDirName, treeNodeFn)
-  return nodes
+export const convertZipArchive = (zipFilename, models, queries, database, projectTopDirName) => {
+  const fileList = {}
+  if (queries.length > 0) {
+    const {filename} = getBaseDAOMeta()
+    fileList[filename] = {filename, fileType: 'mySpotBaseDAO'}
+  }
+  queries.forEach(q => {
+    if (fileList[q.configurationFilename]) {
+      fileList[q.configurationFilename].params.configs.push(q.params)
+      return
+    }
+    if (fileList[q.daoFilename]) {
+      fileList[q.daoFilename].params.functions.push(q.params)
+      return
+    }
+    fileList[q.configurationFilename] = {
+      filename: q.configurationFilename,
+      fileType: 'mySpotConfigurations',
+      params: {filename: q.configurationFilename, configs: [q.params]},
+      table: q.table
+    }
+    fileList[q.daoFilename] = {
+      filename: q.daoFilename,
+      fileType: 'mySpotDAOs',
+      params: {functions: [q.params]},
+      table: q.table
+    }
+  })
+  models.forEach(m => {
+    fileList[m.filename] = {
+      filename: m.filename,
+      fileType: 'dataModel',
+      table: m.table
+    }
+  })
+
+  const files = []
+  const contents = Object.keys(fileList).map((k, i) => {
+    files[i] = fileList[k].filename
+    return fileContentGenerator[fileList[k].fileType](database, fileList[k].table, fileList[k].params)
+  })
+  return new Promise((resolve, reject) => {
+    Promise.all(contents)
+      .then(payload => {
+        const zip = new Zip()
+        payload.forEach((c, i) => {
+          const filename = files[i]
+          const {code} = c
+          zip.file(projectTopDirName + '/' + filename, code)
+        })
+        require('fs').writeFileSync(
+          zipFilename,
+          zip.generate({base64: false, compression: 'DEFLATE'}),
+          {encoding: 'binary'}
+        )
+        resolve()
+      })
+      .catch(reject)
+  })
 }
 
 export const convertFileListToTree = (models, queries, projectTopDirName, treeNodeFn = null) => {

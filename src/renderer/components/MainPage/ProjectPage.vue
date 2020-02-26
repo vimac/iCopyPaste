@@ -35,11 +35,13 @@
 
 <script>
   import {mapActions, mapState} from 'vuex'
+  import {convertZipArchive} from '../../generator/FileListUtil'
+  import {getQueryMeta} from '../../generator/MySpotGenerator'
 
   export default {
     name: 'ProjectPage',
     computed: {
-      ...mapState(['model', 'settings', 'query']),
+      ...mapState(['model', 'settings', 'query', 'db']),
       menuitemClasses () {
         return [
           'menuItem',
@@ -114,7 +116,17 @@
               {name: 'All Files', extensions: ['*']}
             ]
           })
-          console.log(filename)
+          convertZipArchive(
+            filename,
+            this.$modelGenerator.getDataObjectMetaDataByTables('myspot', this.db.config.database, this.model.models),
+            getQueryMeta(this.db.config.database, this.query.queries),
+            this.db.config.database,
+            this.settings.myspot.projectRootDir
+          ).then(() => {
+            this.$Message.success('Zip archive exported')
+          }).catch(e => {
+            this.$Message.error(e.message)
+          })
         }
         return name
       }
