@@ -78,7 +78,7 @@
         this.modalInfoDisplay = false
         this.disableForm = false
         this.updateModels(newTables.map(item => item.name))
-        // this.$router.push('/workspace/project/settings')
+        this.$router.push('/workspace/project/settings')
         setWindowTitle(mySpotDefaults.projectName)
       },
       config (newConfig, oldConfig) {
@@ -110,7 +110,7 @@
             this.$Message.error(err.message)
           })
       }
-      this.doConnect() // auto connect in development env
+      // this.doConnect() // auto connect in development env
     },
     data () {
       return {
