@@ -17,7 +17,8 @@ export default new Vuex.Store({
       whitelist: [
         {mutation: 'ADD_CONNECTION', watchStateKey: 'store'},
         {mutation: 'SET_CONNECTIONS', watchStateKey: 'store'},
-        {mutation: 'SUBMIT_SETTINGS', watchStateKey: 'settings'}
+        {mutation: 'SUBMIT_SETTINGS', watchStateKey: 'settings'},
+        {mutation: 'RESET_SETTINGS', watchStateKey: 'settings'}
       ]
     }),
     createSharedMutations()

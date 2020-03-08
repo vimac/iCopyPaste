@@ -90,6 +90,7 @@
           })
         } else if (name === 'saveProject') {
           const filename = dialog.showSaveDialog({
+            defaultPath: this.settings.myspot.projectName + '.icpproj',
             filters: [
               {name: 'iCopyPaste Project', extensions: ['icpproj']},
               {name: 'All Files', extensions: ['*']}

@@ -1,6 +1,6 @@
 # iCopyPaste
 
-<img src="https://github.com/vimac/iCopyPaste/raw/master/build/icons/256x256.png" width="128" height="128" alt="应用图标"/>
+<img src="./build/icons/256x256.png" style="width: 128px; height: 128px" alt="Logo"/>
 
 一个可视化 SQL 映射代码以及 DAL 数据库访问层的代码生成工具, 目前主要适配 [MySpot](https://github.com/vimac/myspot), 一个支持 SQL Map 的 PHP 数据库访问层的框架
 
@@ -8,11 +8,18 @@
 
 使用 Electron + Vue + iView + Sequelize 构建, 在 Electron 的支持下, 它可以在 **Windows**, **macOS**, **Linux** 上运行
 
-<img src="https://github.com/vimac/iCopyPaste/raw/master/snapshot.png" alt="Snapshot"/>
+![snapshot](./snapshot.png)
 
 #### 下载
 
 前往 https://github.com/vimac/iCopyPaste/releases 获取最新版本
+
+#### 动机
+
+我知道市场上已经有很多类似的数据库代码生成工具，但是问题是:
+ 
+* 它们都不是我写的 :)
+* 它们都不会支持 ["MySpot"](https://github.com/vimac/myspot/) (这个工具一开始的初衷是为它准备的)
 
 #### 本地编译环境
 

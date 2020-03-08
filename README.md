@@ -1,6 +1,6 @@
 # iCopyPaste
 
-<img src="https://github.com/vimac/iCopyPaste/raw/master/build/icons/256x256.png" width="128" height="128" alt="Main Icon"/>
+<img src="./build/icons/256x256.png" style="width: 128px; height: 128px" alt="Logo"/>
 
 [Chinese README / 中文版读我](README.zh.md)
 
@@ -10,11 +10,18 @@ I will add MyBatis + Java support in the future
 
 Built by Electron + Vue + iView + Sequelize. With Electron's power, it supports **Windows**, **macOS** and **Linux** desktop.
 
-<img src="https://github.com/vimac/iCopyPaste/raw/master/snapshot.png" alt="Snapshot"/>
+![snapshot](./snapshot.png)
 
 #### Download
 
 Visit https://github.com/vimac/iCopyPaste/releases for the latest release
+
+#### Why?
+
+I know that there are many similar database code generation tools on the market, but the problem is:
+ 
+* None of them are written by me :)
+* And none of them will support ["MySpot"](https://github.com/vimac/myspot/)
 
 #### Build Setup
 
