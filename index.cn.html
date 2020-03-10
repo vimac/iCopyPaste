@@ -38,17 +38,17 @@
                                     </a>
                                 </el-menu-item>
                             </el-submenu>
-                            <el-menu-item><a target="_blank" href="//github.com/vimac/iCopyPaste/">
+                            <el-menu-item>
+                                <a target="_blank" href="//github.com/vimac/iCopyPaste/">
                                     Github</a>
                             </el-menu-item>
                             <el-menu-item>
                                 <a target="_blank" href="//github.com/vimac/iCopyPaste/releases/">
-                                    Releases
-                                </a>
+                                    发布</a>
                             </el-menu-item>
                             <el-menu-item>
-                                <a href="./index.html?force">
-                                    Home
+                                <a href="./index.cn.html?force">
+                                    首页
                                 </a>
                             </el-menu-item>
                         </el-menu>
@@ -62,42 +62,42 @@
                     <el-col>
                         <el-main>
                             <p>
-                                <h2>iCopyPaste - A GUI SQL map generation tool</h2>
+                                <h2>iCopyPaste - 一个可视化 SQL Map 代码生成器</h2>
                             </p>
                             <p>
-                                A visual SQL Map code generator, hoping to save your time when coding to access the
-                                database.
+                                一个可视化 SQL Map 代码生成器, 希望能帮助您在编写数据库代码时节省时间
                             </p>
-                            <h3>Features</h3>
+                            <h3>特性</h3>
                             <ul>
-                                <li>Supports all major OS platforms: Windows / macOS / Linux</li>
-                                <li>Supports <a href="//mybatis.org" target="_blank">MyBatis</a>(Java) &
-                                    <a href="//myspot.vifix.cn" target="_blank">MySpot</a>(PHP)</li>
-                                <li>Project structure generation</li>
-                                <li>Query statement visualize generation</li>
+                                <li>支持主流操作系统平台: Windows / macOS / Linux</li>
+                                <li>支持 <a href="//mybatis.org" target="_blank">MyBatis</a> (Java) &
+                                    <a href="//myspot.vifix.cn" target="_blank">MySpot</a> (PHP)</li>
+                                <li>支持生成工程结构</li>
+                                <li>查询语句可视化生成</li>
                             </ul>
-                            <h3>Download</h3>
+                            <h3>下载</h3>
                             <p>
                                 <div class="download-container">
                                     <a
                                         href="//github.com/vimac/iCopyPaste/releases/latest/download/iCopyPaste_win_x64.exe">
                                         <i class="iconfont icon-windows"></i>
                                     </a>
-                                    <a href="//github.com/vimac/iCopyPaste/releases/latest/download/iCopyPaste_mac.dmg">
+                                    <a
+                                        href="//github.com/vimac/iCopyPaste/releases/latest/download/iCopyPaste_mac.dmg">
                                         <i class="iconfont icon-macOS"></i></a>
                                     <a
                                         href="//github.com/vimac/iCopyPaste/releases/latest/download/iCopyPaste_linux_x64.AppImage">
                                         <i class="iconfont icon-linux"></i></a>
                                 </div>
                             </p>
-                            <h3>Snapshot</h3>
+                            <h3>截图</h3>
                             <p>
                                 <img alt="screenshot" src="./images/screenshot.png"
                                     srcset="./images/screenshot@2x.png 2x, ./images/screenshot@3x.png 3x" />
                             </p>
-                            <h3>License</h3>
+                            <h3>授权许可</h3>
                             <p>
-                                <a href="//github.com/vimac/iCopyPaste/LICENSE" target="_blank">MIT License</a>
+                                <a href="//github.com/vimac/iCopyPaste/LICENSE" target="_blank">MIT 协议</a>
                             </p>
                         </el-main>
                     </el-col>
@@ -115,12 +115,13 @@
 </body>
 <script type="text/javascript">
     var lang = (window.navigator.userLanguage || window.navigator.language || 'en').toLowerCase()
-    if (lang.indexOf('zh') !== -1 && lang.indexOf("cn") !== -1 && window.location.href.indexOf('force') === -1) {
-        window.location.href = './index.cn.html'
+    if (lang.indexOf('zh') === -1 && lang.indexOf("cn") === -1 && window.location.href.indexOf('force') !== -1) {
+        window.location.href = './index.html'
     }
 
     // var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
-    document.write(unescape("%3Cspan class='cnzzText' style='visibility: hidden' id='cnzz_stat_icon_1278561323'%3E%3C/span%3E%3Cscript src='" +
+    document.write(unescape(
+        "%3Cspan class='cnzzText' style='visibility: hidden' id='cnzz_stat_icon_1278561323'%3E%3C/span%3E%3Cscript src='" +
         "//s4.cnzz.com/z_stat.php%3Fid%3D1278561323' type='text/javascript'%3E%3C/script%3E"));
 
     function loadScript(src) {
